@@ -4,39 +4,93 @@
 <meta charset="UTF-8">
 <title>Mini Multiplayer Visual</title>
 <style>
-body { margin:0; padding:0; font-family:sans-serif; background:#222; color:#eee; text-align:center; }
-#roomDiv, #game { margin-top:20px; }
-button { margin:5px; padding:10px; cursor:pointer; }
-#game { display:none; position:relative; width:800px; height:500px; margin:20px auto; border:2px solid #eee; background:#333; overflow:hidden; }
-.player { position:absolute; width:50px; height:50px; }
-#player1 { background:red; }
-#player2 { background:blue; }
-.healthBar { height:5px; background:lime; width:100%; position:absolute; top:-10px; }
-.bullet { position:absolute; width:10px; height:10px; background:yellow; border-radius:50%; }
-#scoreboard { margin-bottom:10px; font-size:18px; }
+  /* === VISUAL MELHORADO === */
+  body { 
+    margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: #1a1a2e; color: #fff; text-align: center; 
+  }
+  h1 { margin-top: 30px; color: #e94560; text-transform: uppercase; letter-spacing: 2px; }
+  
+  #roomDiv {
+    background: #16213e; padding: 30px; border-radius: 10px; width: 400px;
+    margin: 40px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  }
+  input {
+    padding: 12px; width: 80%; border: none; border-radius: 5px; margin-bottom: 15px;
+    font-size: 16px; text-align: center; outline: none;
+  }
+  button { 
+    padding: 12px 20px; border: none; border-radius: 5px; background: #e94560; 
+    color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; margin: 5px;
+  }
+  button:hover { background: #ff5773; transform: scale(1.05); }
+
+  #game { 
+    display: none; position: relative; width: 800px; height: 500px; margin: 20px auto; 
+    border: 4px solid #0f3460; background: #222; overflow: hidden; border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  }
+  
+  /* Informações da Sala e Placar */
+  #gameHeader {
+    display: flex; justify-content: space-between; padding: 10px 20px; 
+    background: rgba(15, 52, 96, 0.8); border-bottom: 2px solid #0f3460;
+  }
+  #roomCodeDisplay { font-weight: bold; color: #00ffcc; font-size: 18px; }
+  #scoreboard { font-size: 18px; font-weight: bold; }
+
+  /* Jogadores */
+  .player { 
+    position: absolute; width: 50px; height: 50px; border-radius: 8px; 
+    box-shadow: 0 0 15px rgba(255,255,255,0.2); transition: top 0.1s, left 0.1s;
+    display: none; /* Escondido até entrar na sala */
+  }
+  #player1 { background: #ff3366; } /* Vermelho neon */
+  #player2 { background: #33ccff; } /* Azul neon */
+  
+  .healthBarContainer {
+    position: absolute; top: -15px; left: 0; width: 100%; height: 6px; 
+    background: #555; border-radius: 3px; overflow: hidden;
+  }
+  .healthBar { height: 100%; background: #00ffcc; width: 100%; transition: width 0.2s; }
+  
+  /* Balas */
+  .bullet { position: absolute; width: 12px; height: 12px; background: #ffff00; border-radius: 50%; box-shadow: 0 0 10px #ffff00; }
 </style>
 </head>
 <body>
-<h1>Mini Multiplayer Visual</h1>
+
+<h1>Batalha Multiplayer</h1>
 
 <div id="roomDiv">
-  <input type="text" id="roomIdInput" placeholder="Código da Sala">
-  <button onclick="createRoom()">Criar Sala</button>
-  <button onclick="joinRoom()">Entrar na Sala</button>
+  <h3>Jogue com um amigo</h3>
+  <input type="text" id="roomIdInput" placeholder="Digite o Código da Sala">
+  <br>
+  <button onclick="createRoom()">Criar Nova Sala</button>
+  <button onclick="joinRoom()" style="background: #0f3460;">Entrar na Sala</button>
 </div>
 
 <div id="game">
-  <div id="scoreboard"></div>
-  <div id="player1" class="player"><div class="healthBar" id="hp1"></div></div>
-  <div id="player2" class="player"><div class="healthBar" id="hp2"></div></div>
+  <div id="gameHeader">
+    <div id="roomCodeDisplay">Sala: Aguardando...</div>
+    <div id="scoreboard">Placar: 0 x 0</div>
+  </div>
+  
+  <div id="bulletsContainer"></div>
+
+  <div id="player1" class="player">
+    <div class="healthBarContainer"><div class="healthBar" id="hp1"></div></div>
+  </div>
+  <div id="player2" class="player">
+    <div class="healthBarContainer"><div class="healthBar" id="hp2"></div></div>
+  </div>
 </div>
 
-<!-- Firebase compat scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-// === Configuração do Firebase (já com seus dados) ===
+// === Configuração do Firebase ===
 const firebaseConfig = {
   apiKey: "AIzaSyBnGBqNYQewQsX-rHVwRrcrqbw1Dw27lvM",
   authDomain: "minimultiplayergame-f508c.firebaseapp.com",
@@ -47,120 +101,196 @@ const firebaseConfig = {
   measurementId: "G-KHR7PB90RP"
 };
 
-// Inicializa Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // === Variáveis do jogo ===
-let roomId="", playerId=Math.random().toString(36).substr(2,5);
-let isCreator=false, players=[], bullets=[];
-let interval;
+let roomId = "", playerId = Math.random().toString(36).substr(2,5);
+let isCreator = false, players = [], bullets = [];
+let keys = {}; // Para movimento mais suave
 
 // === Criar Sala ===
 async function createRoom() {
   roomId = Math.random().toString(36).substr(2,5).toUpperCase();
   isCreator = true;
-  players = [{id:playerId, x:50, y:200, life:3, points:0}];
-  await db.collection("rooms").doc(roomId).set({players:players});
+  players = [{id: playerId, x: 50, y: 200, life: 3, points: 0}];
+  
+  await db.collection("rooms").doc(roomId).set({players: players, bullets: []});
+  
+  document.getElementById("roomCodeDisplay").innerText = "Código da Sala: " + roomId;
   startGame();
 }
 
 // === Entrar Sala ===
 async function joinRoom() {
-  const input = document.getElementById("roomIdInput").value.toUpperCase();
+  const input = document.getElementById("roomIdInput").value.toUpperCase().trim();
+  if(!input) return alert("Digite um código de sala!");
+  
   const roomRef = db.collection("rooms").doc(input);
   const snap = await roomRef.get();
-  if(!snap.exists) return alert("Sala não existe");
+  
+  if(!snap.exists) return alert("Sala não existe!");
   let data = snap.data();
-  if(data.players.length>=2) return alert("Sala cheia!");
+  if(data.players.length >= 2) return alert("Sala cheia!");
+  
   roomId = input;
   players = data.players;
-  players.push({id:playerId, x:700, y:200, life:3, points:0});
-  await roomRef.update({players:players});
+  players.push({id: playerId, x: 700, y: 200, life: 3, points: 0});
+  
+  await roomRef.update({players: players});
+  document.getElementById("roomCodeDisplay").innerText = "Código da Sala: " + roomId;
   startGame();
 }
 
 // === Iniciar Jogo ===
 function startGame() {
-  document.getElementById("roomDiv").style.display="none";
-  document.getElementById("game").style.display="block";
+  document.getElementById("roomDiv").style.display = "none";
+  document.getElementById("game").style.display = "block";
   listenRoom();
-  interval = setInterval(gameLoop,30);
+  
+  // Loop de movimento local (60fps)
+  requestAnimationFrame(gameLoop);
+  
+  // Salva no banco de dados a cada 100ms para não travar o Firebase
+  setInterval(syncToServer, 100);
 }
 
-// === Ouvir mudanças na sala ===
+// === Ouvir mudanças na sala do Firebase ===
 function listenRoom() {
-  db.collection("rooms").doc(roomId).onSnapshot(doc=>{
+  db.collection("rooms").doc(roomId).onSnapshot(doc => {
     let data = doc.data();
     if(!data) return;
-    players = data.players;
+    
+    // Pega os dados que vieram do outro jogador
+    let otherPlayerId = players.find(p => p.id !== playerId)?.id;
+    if (otherPlayerId && data.players) {
+        let remoteOtherPlayer = data.players.find(p => p.id === otherPlayerId);
+        let localOtherPlayer = players.find(p => p.id === otherPlayerId);
+        if(remoteOtherPlayer && localOtherPlayer) {
+            localOtherPlayer.x = remoteOtherPlayer.x;
+            localOtherPlayer.y = remoteOtherPlayer.y;
+            localOtherPlayer.life = remoteOtherPlayer.life;
+            localOtherPlayer.points = remoteOtherPlayer.points;
+        }
+    } else {
+        // Se eu sou o host e o player 2 acabou de entrar
+        players = data.players;
+    }
+    
+    // Atualiza balas que vieram do servidor
+    bullets = data.bullets || [];
     updateVisual();
   });
 }
 
-// === Atualizar visual ===
+// === Atualizar visual na tela ===
 function updateVisual() {
   const p1 = document.getElementById("player1");
   const p2 = document.getElementById("player2");
-  if(players[0]) { p1.style.left=players[0].x+"px"; p1.style.top=players[0].y+"px"; document.getElementById("hp1").style.width=(players[0].life/3*100)+"%"; }
-  if(players[1]) { p2.style.left=players[1].x+"px"; p2.style.top=players[1].y+"px"; document.getElementById("hp2").style.width=(players[1].life/3*100)+"%"; }
-  document.getElementById("scoreboard").innerText=`${players[0]?.id || ""}: ${players[0]?.points || 0} | ${players[1]?.id || ""}: ${players[1]?.points || 0}`;
+  const bulletsDiv = document.getElementById("bulletsContainer");
+
+  // Atualiza Jogador 1 (Criador)
+  if(players[0]) { 
+    p1.style.display = "block";
+    p1.style.left = players[0].x + "px"; 
+    p1.style.top = players[0].y + "px"; 
+    document.getElementById("hp1").style.width = (players[0].life / 3 * 100) + "%"; 
+  }
+  
+  // Atualiza Jogador 2 (Convidado)
+  if(players[1]) { 
+    p2.style.display = "block";
+    p2.style.left = players[1].x + "px"; 
+    p2.style.top = players[1].y + "px"; 
+    document.getElementById("hp2").style.width = (players[1].life / 3 * 100) + "%"; 
+  }
+
+  // Atualiza Placar
+  let scoreText = `P1: ${players[0]?.points || 0} x P2: ${players[1]?.points || 0}`;
+  document.getElementById("scoreboard").innerText = scoreText;
+
+  // Atualiza Balas (Desenha as bolinhas amarelas)
+  bulletsDiv.innerHTML = ""; // limpa antigas
+  bullets.forEach(b => {
+    let div = document.createElement("div");
+    div.className = "bullet";
+    div.style.left = b.x + "px";
+    div.style.top = b.y + "px";
+    bulletsDiv.appendChild(div);
+  });
 }
 
-// === Atirar ===
+// === Controles de Teclado ===
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+// Evento de atirar avulso (apertar uma vez só)
+document.addEventListener("keydown", e => {
+  if (e.key === " " && isCreator) shoot();
+  if (e.key === "Enter" && !isCreator) shoot();
+});
+
 function shoot() {
-  let bullet = {x:players.find(p=>p.id===playerId).x+25, y:players.find(p=>p.id===playerId).y+20, owner:playerId};
+  let me = players.find(p => p.id === playerId);
+  if(!me) return;
+  
+  // Posição de onde o tiro sai (meio do quadrado)
+  let bullet = { x: me.x + 20, y: me.y + 20, owner: playerId };
   bullets.push(bullet);
 }
 
-// === Loop de jogo ===
+// === Loop Local do Jogo (Movimento e Colisão) ===
 function gameLoop() {
-  bullets.forEach((b,i)=>{
-    b.x += (b.owner===players[0]?.id?5:-5);
-    if(b.x<0||b.x>800){ bullets.splice(i,1); return; }
-    let target = players.find(p=>p.id!==b.owner);
-    if(target && b.x>=target.x && b.x<=target.x+50 && b.y>=target.y && b.y<=target.y+50){
-      target.life-=1;
-      if(target.life<=0){
-        target.life=3;
-        let shooter = players.find(p=>p.id===b.owner);
-        shooter.points+=1;
-      }
-      bullets.splice(i,1);
+  let me = players.find(p => p.id === playerId);
+  if(me) {
+    // Movimentação do Jogador Atual
+    let speed = 5;
+    if (isCreator) { // P1 usa WASD
+      if(keys["w"] && me.y > 0) me.y -= speed;
+      if(keys["s"] && me.y < 450) me.y += speed;
+      if(keys["a"] && me.x > 0) me.x -= speed;
+      if(keys["d"] && me.x < 750) me.x += speed;
+    } else { // P2 usa Setas
+      if(keys["ArrowUp"] && me.y > 0) me.y -= speed;
+      if(keys["ArrowDown"] && me.y < 450) me.y += speed;
+      if(keys["ArrowLeft"] && me.x > 0) me.x -= speed;
+      if(keys["ArrowRight"] && me.x < 750) me.x += speed;
     }
-  });
-  db.collection("rooms").doc(roomId).update({players:players});
+  }
+
+  // Apenas o Host (Criador) calcula a física das balas para não dar conflito
+  if (isCreator) {
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      let b = bullets[i];
+      // P1 atira pra direita (+10), P2 atira pra esquerda (-10)
+      b.x += (b.owner === players[0]?.id ? 10 : -10);
+      
+      // Remove bala fora da tela
+      if(b.x < 0 || b.x > 800) { bullets.splice(i, 1); continue; }
+      
+      // Colisão com jogadores
+      let target = players.find(p => p.id !== b.owner);
+      if(target && b.x >= target.x && b.x <= target.x + 50 && b.y >= target.y && b.y <= target.y + 50) {
+        target.life -= 1;
+        if(target.life <= 0) {
+          target.life = 3; // Reseta a vida
+          let shooter = players.find(p => p.id === b.owner);
+          if (shooter) shooter.points += 1;
+        }
+        bullets.splice(i, 1); // Destrói a bala
+      }
+    }
+  }
+
   updateVisual();
+  requestAnimationFrame(gameLoop); // Roda isso suave a 60 frames por segundo
 }
 
-// === Controles ===
-document.addEventListener("keydown", e=>{
-  let p = players.find(p=>p.id===playerId);
-  if(!p) return;
-  if(playerId===players[0]?.id){
-    if(e.key==="w") p.y-=5;
-    if(e.key==="s") p.y+=5;
-    if(e.key==="a") p.x-=5;
-    if(e.key==="d") p.x+=5;
-    if(e.key===" ") shoot();
-  } else {
-    if(e.key==="ArrowUp") p.y-=5;
-    if(e.key==="ArrowDown") p.y+=5;
-    if(e.key==="ArrowLeft") p.x-=5;
-    if(e.key==="ArrowRight") p.x+=5;
-    if(e.key==="Enter") shoot();
+// === Envia os dados para o Firebase sem travar (10 vezes por segundo) ===
+function syncToServer() {
+  if (roomId && players.length > 0) {
+    db.collection("rooms").doc(roomId).update({ players: players, bullets: bullets });
   }
-});
-
-// === Expulsar jogador ===
-async function expel() {
-  if(!isCreator) return;
-  let roomRef = db.collection("rooms").doc(roomId);
-  let snap = await roomRef.get();
-  let data = snap.data();
-  data.players = data.players.filter(p=>p.id===playerId);
-  await roomRef.update({players:data.players});
-  alert("Jogador expulso!");
 }
 </script>
 </body>
