@@ -2,122 +2,95 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detecção de Vermelho em Tempo Real</title>
+<title>Detector de Mão</title>
 <style>
-  body { margin: 0; font-family: sans-serif; text-align: center; background: #111; color: #fff; }
-  #video, #image, #canvas { width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto; }
-  #status { font-size: 20px; margin: 10px 0; }
-  #fileInput { margin: 10px; }
+  body { margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  video, canvas { max-width: 100%; border:1px solid black; }
+  #controls { margin:10px; }
 </style>
 </head>
 <body>
 
-<h2>Detecção de Vermelho</h2>
-<input type="file" id="fileInput" accept="image/*,video/*">
+<h2>Detector de Mão</h2>
+<div id="controls">
+  <button id="startCamBtn">Abrir Câmera</button>
+  <input type="file" id="uploadFile" accept="image/*,video/*">
+</div>
+
 <video id="video" autoplay playsinline style="display:none;"></video>
-<img id="image" style="display:none;">
 <canvas id="canvas"></canvas>
-<div id="status">Aguardando...</div>
-<audio id="beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
-<script>
-const video = document.getElementById('video');
-const image = document.getElementById('image');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const status = document.getElementById('status');
-const fileInput = document.getElementById('fileInput');
-const beep = document.getElementById('beep');
+<audio id="beep" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
-let isVideo = false;
+<script type="module">
+  import {Hands} from 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js';
+  import {Camera} from 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js';
+  import {drawConnectors, drawLandmarks} from 'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js';
 
-// Função para detectar vermelho e desenhar recorte
-function detectRed() {
-  if (canvas.width === 0 || canvas.height === 0) return;
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const beep = document.getElementById('beep');
 
-  const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const data = frame.data;
-  let count = 0;
+  const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+  hands.setOptions({
+    maxNumHands: 2,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.7,
+    minTrackingConfidence: 0.7
+  });
 
-  // Cria overlay para destacar vermelho
-  for (let i = 0; i < data.length; i += 4) {
-    const r = data[i], g = data[i+1], b = data[i+2];
-    if (r > 150 && g < 100 && b < 100) {
-      count++;
-      // Destacar pixel vermelho com overlay amarelo
-      data[i] = 255;
-      data[i+1] = 255;
-      data[i+2] = 0;
+  hands.onResults(results => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+
+    if(results.multiHandLandmarks && results.multiHandLandmarks.length > 0){
+      for(const landmarks of results.multiHandLandmarks){
+        drawConnectors(ctx, landmarks, Hands.HAND_CONNECTIONS, {color:'green', lineWidth:3});
+        drawLandmarks(ctx, landmarks, {color:'red', lineWidth:2});
+      }
+      // Toca beep se detectar pelo menos 1 mão
+      beep.play();
     }
-  }
+  });
 
-  ctx.putImageData(frame, 0, 0);
+  let cameraInstance;
 
-  if (count > 500) { // Sensibilidade
-    status.textContent = "Vermelho detectado!";
-    if (!beep.playing) beep.play().catch(()=>{}); // Toca beep
-  } else {
-    status.textContent = "Nenhum vermelho detectado.";
-  }
-}
-
-// Função para processar vídeo em tempo real
-function processVideo() {
-  if (!isVideo) return;
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  detectRed();
-  requestAnimationFrame(processVideo);
-}
-
-// Abrir câmera do celular
-function startCamera() {
-  isVideo = true;
-  image.style.display = 'none';
-  video.style.display = 'block';
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-    .then(stream => {
-      video.srcObject = stream;
-      video.play();
-      processVideo();
-    })
-    .catch(err => alert("Erro ao acessar a câmera: " + err));
-}
-
-// Upload de imagem ou vídeo
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const url = URL.createObjectURL(file);
-
-  if (file.type.startsWith('video/')) {
-    // Vídeo
-    isVideo = true;
-    image.style.display = 'none';
+  document.getElementById('startCamBtn').addEventListener('click', ()=>{
     video.style.display = 'block';
-    video.src = url;
-    video.play();
-    video.addEventListener('loadeddata', processVideo);
-  } else if (file.type.startsWith('image/')) {
-    // Imagem
-    isVideo = false;
-    video.style.display = 'none';
-    image.style.display = 'block';
-    image.src = url;
-    image.onload = () => {
-      canvas.width = image.width;
-      canvas.height = image.height;
-      ctx.drawImage(image, 0, 0);
-      detectRed();
-    };
-  }
-});
+    cameraInstance = new Camera(video, {
+      onFrame: async ()=>{ await hands.send({image: video}); },
+      width: 640,
+      height: 480
+    });
+    cameraInstance.start();
+  });
 
-// Começa a câmera automaticamente ao abrir a página (opcional)
-startCamera();
+  // Upload de imagem ou vídeo
+  document.getElementById('uploadFile').addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const url = URL.createObjectURL(file);
+    if(file.type.startsWith('image')){
+      video.style.display='none';
+      const img = new Image();
+      img.onload = ()=>{
+        canvas.width = img.width;
+        canvas.height = img.height;
+        hands.send({image: img});
+      }
+      img.src = url;
+    } else if(file.type.startsWith('video')){
+      video.style.display='block';
+      video.src = url;
+      video.play();
+      const interval = setInterval(()=>hands.send({image: video}), 33);
+      video.onended = ()=>clearInterval(interval);
+    }
+  });
 </script>
 
 </body>
