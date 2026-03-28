@@ -1,178 +1,167 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Detector de Mão</title>
+<title>Mini Multiplayer Visual</title>
 <style>
-  /* Reset básico */
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom, #f0f4f8, #d9e2ec);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    padding: 20px;
-    color: #333;
-  }
-
-  h2 {
-    margin-bottom: 15px;
-    color: #1f3c88;
-    text-align: center;
-  }
-
-  #controls {
-    margin-bottom: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
-
-  button, input[type="file"] {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s;
-  }
-
-  button {
-    background-color: #1f3c88;
-    color: white;
-  }
-
-  button:hover {
-    background-color: #3f5db5;
-  }
-
-  input[type="file"] {
-    background-color: #e1e7f0;
-  }
-
-  video, canvas {
-    max-width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  }
-
-  canvas {
-    margin-top: 10px;
-  }
-
-  /* Mensagem de alerta */
-  #message {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #d9534f;
-    text-align: center;
-  }
+body { margin:0; padding:0; font-family:sans-serif; background:#222; color:#eee; text-align:center; }
+#roomDiv, #game { margin-top:20px; }
+button { margin:5px; padding:10px; cursor:pointer; }
+#game { display:none; position:relative; width:800px; height:500px; margin:20px auto; border:2px solid #eee; background:#333; overflow:hidden; }
+.player { position:absolute; width:50px; height:50px; }
+#player1 { background:red; }
+#player2 { background:blue; }
+.healthBar { height:5px; background:lime; width:100%; position:absolute; top:-10px; }
+.bullet { position:absolute; width:10px; height:10px; background:yellow; border-radius:50%; }
+#scoreboard { margin-bottom:10px; font-size:18px; }
 </style>
 </head>
 <body>
+<h1>Mini Multiplayer Visual</h1>
 
-<h2>Detector de Mão</h2>
-
-<div id="controls">
-  <button id="startCamBtn">Abrir Câmera</button>
-  <input type="file" id="uploadFile" accept="image/*,video/*">
+<div id="roomDiv">
+  <input type="text" id="roomIdInput" placeholder="Código da Sala">
+  <button onclick="createRoom()">Criar Sala</button>
+  <button onclick="joinRoom()">Entrar na Sala</button>
 </div>
 
-<video id="video" autoplay playsinline muted style="display:none;"></video>
-<canvas id="canvas"></canvas>
-<div id="message"></div>
+<div id="game">
+  <div id="scoreboard"></div>
+  <div id="player1" class="player"><div class="healthBar" id="hp1"></div></div>
+  <div id="player2" class="player"><div class="healthBar" id="hp2"></div></div>
+</div>
 
-<audio id="beep" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+<!-- Firebase compat scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<script type="module">
-  import {Hands} from 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js';
-  import {drawConnectors, drawLandmarks} from 'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js';
+<script>
+// === Configuração do Firebase (já com seus dados) ===
+const firebaseConfig = {
+  apiKey: "AIzaSyBnGBqNYQewQsX-rHVwRrcrqbw1Dw27lvM",
+  authDomain: "minimultiplayergame-f508c.firebaseapp.com",
+  projectId: "minimultiplayergame-f508c",
+  storageBucket: "minimultiplayergame-f508c.firebasestorage.app",
+  messagingSenderId: "766336023232",
+  appId: "1:766336023232:web:1ca9f60f4ccff2537f4b25",
+  measurementId: "G-KHR7PB90RP"
+};
 
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  const beep = document.getElementById('beep');
-  const message = document.getElementById('message');
+// Inicializa Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  const hands = new Hands({
-    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+// === Variáveis do jogo ===
+let roomId="", playerId=Math.random().toString(36).substr(2,5);
+let isCreator=false, players=[], bullets=[];
+let interval;
+
+// === Criar Sala ===
+async function createRoom() {
+  roomId = Math.random().toString(36).substr(2,5).toUpperCase();
+  isCreator = true;
+  players = [{id:playerId, x:50, y:200, life:3, points:0}];
+  await db.collection("rooms").doc(roomId).set({players:players});
+  startGame();
+}
+
+// === Entrar Sala ===
+async function joinRoom() {
+  const input = document.getElementById("roomIdInput").value.toUpperCase();
+  const roomRef = db.collection("rooms").doc(input);
+  const snap = await roomRef.get();
+  if(!snap.exists) return alert("Sala não existe");
+  let data = snap.data();
+  if(data.players.length>=2) return alert("Sala cheia!");
+  roomId = input;
+  players = data.players;
+  players.push({id:playerId, x:700, y:200, life:3, points:0});
+  await roomRef.update({players:players});
+  startGame();
+}
+
+// === Iniciar Jogo ===
+function startGame() {
+  document.getElementById("roomDiv").style.display="none";
+  document.getElementById("game").style.display="block";
+  listenRoom();
+  interval = setInterval(gameLoop,30);
+}
+
+// === Ouvir mudanças na sala ===
+function listenRoom() {
+  db.collection("rooms").doc(roomId).onSnapshot(doc=>{
+    let data = doc.data();
+    if(!data) return;
+    players = data.players;
+    updateVisual();
   });
+}
 
-  hands.setOptions({
-    maxNumHands: 2,
-    modelComplexity: 1,
-    minDetectionConfidence: 0.7,
-    minTrackingConfidence: 0.7
-  });
+// === Atualizar visual ===
+function updateVisual() {
+  const p1 = document.getElementById("player1");
+  const p2 = document.getElementById("player2");
+  if(players[0]) { p1.style.left=players[0].x+"px"; p1.style.top=players[0].y+"px"; document.getElementById("hp1").style.width=(players[0].life/3*100)+"%"; }
+  if(players[1]) { p2.style.left=players[1].x+"px"; p2.style.top=players[1].y+"px"; document.getElementById("hp2").style.width=(players[1].life/3*100)+"%"; }
+  document.getElementById("scoreboard").innerText=`${players[0]?.id || ""}: ${players[0]?.points || 0} | ${players[1]?.id || ""}: ${players[1]?.points || 0}`;
+}
 
-  hands.onResults(results => {
-    canvas.width = video.videoWidth || canvas.width;
-    canvas.height = video.videoHeight || canvas.height;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+// === Atirar ===
+function shoot() {
+  let bullet = {x:players.find(p=>p.id===playerId).x+25, y:players.find(p=>p.id===playerId).y+20, owner:playerId};
+  bullets.push(bullet);
+}
 
-    if(results.multiHandLandmarks && results.multiHandLandmarks.length > 0){
-      for(const landmarks of results.multiHandLandmarks){
-        drawConnectors(ctx, landmarks, Hands.HAND_CONNECTIONS, {color:'green', lineWidth:3});
-        drawLandmarks(ctx, landmarks, {color:'red', lineWidth:2});
+// === Loop de jogo ===
+function gameLoop() {
+  bullets.forEach((b,i)=>{
+    b.x += (b.owner===players[0]?.id?5:-5);
+    if(b.x<0||b.x>800){ bullets.splice(i,1); return; }
+    let target = players.find(p=>p.id!==b.owner);
+    if(target && b.x>=target.x && b.x<=target.x+50 && b.y>=target.y && b.y<=target.y+50){
+      target.life-=1;
+      if(target.life<=0){
+        target.life=3;
+        let shooter = players.find(p=>p.id===b.owner);
+        shooter.points+=1;
       }
-      beep.play();
-      message.textContent = `Mão detectada!`;
-    } else {
-      message.textContent = '';
+      bullets.splice(i,1);
     }
   });
+  db.collection("rooms").doc(roomId).update({players:players});
+  updateVisual();
+}
 
-  // Função para abrir câmera
-  document.getElementById('startCamBtn').addEventListener('click', async ()=>{
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({video:true});
-      video.srcObject = stream;
-      video.style.display = 'block';
-      await video.play();
-      requestAnimationFrame(runDetection);
-    } catch(err) {
-      message.textContent = 'Permissão negada ou câmera não disponível: ' + err.message;
-    }
-  });
-
-  // Loop de detecção
-  async function runDetection(){
-    if(video.srcObject){
-      await hands.send({image: video});
-      requestAnimationFrame(runDetection);
-    }
+// === Controles ===
+document.addEventListener("keydown", e=>{
+  let p = players.find(p=>p.id===playerId);
+  if(!p) return;
+  if(playerId===players[0]?.id){
+    if(e.key==="w") p.y-=5;
+    if(e.key==="s") p.y+=5;
+    if(e.key==="a") p.x-=5;
+    if(e.key==="d") p.x+=5;
+    if(e.key===" ") shoot();
+  } else {
+    if(e.key==="ArrowUp") p.y-=5;
+    if(e.key==="ArrowDown") p.y+=5;
+    if(e.key==="ArrowLeft") p.x-=5;
+    if(e.key==="ArrowRight") p.x+=5;
+    if(e.key==="Enter") shoot();
   }
+});
 
-  // Upload de imagem ou vídeo
-  document.getElementById('uploadFile').addEventListener('change', e=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const url = URL.createObjectURL(file);
-
-    if(file.type.startsWith('image')){
-      video.style.display='none';
-      const img = new Image();
-      img.onload = ()=>{
-        canvas.width = img.width;
-        canvas.height = img.height;
-        hands.send({image: img});
-      }
-      img.src = url;
-    } else if(file.type.startsWith('video')){
-      video.style.display='block';
-      video.src = url;
-      video.play();
-      const interval = setInterval(()=>hands.send({image: video}), 33);
-      video.onended = ()=>clearInterval(interval);
-    }
-  });
+// === Expulsar jogador ===
+async function expel() {
+  if(!isCreator) return;
+  let roomRef = db.collection("rooms").doc(roomId);
+  let snap = await roomRef.get();
+  let data = snap.data();
+  data.players = data.players.filter(p=>p.id===playerId);
+  await roomRef.update({players:data.players});
+  alert("Jogador expulso!");
+}
 </script>
-
 </body>
 </html>
