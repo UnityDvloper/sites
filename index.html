@@ -4,27 +4,39 @@
 <meta charset="UTF-8">
 <title>Detector de Mão</title>
 <style>
-  body { margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  video, canvas { max-width: 100%; border:1px solid black; }
-  #controls { margin:10px; }
+  body {
+    margin:0;
+    font-family:sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  video, canvas {
+    max-width: 100%;
+    border:1px solid black;
+  }
+  #controls {
+    margin:10px;
+  }
 </style>
 </head>
 <body>
 
 <h2>Detector de Mão</h2>
+
 <div id="controls">
   <button id="startCamBtn">Abrir Câmera</button>
   <input type="file" id="uploadFile" accept="image/*,video/*">
 </div>
 
-<video id="video" autoplay playsinline style="display:none;"></video>
+<video id="video" autoplay playsinline muted style="display:none;"></video>
 <canvas id="canvas"></canvas>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
 <script type="module">
   import {Hands} from 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js';
-  import {Camera} from 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js';
   import {drawConnectors, drawLandmarks} from 'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js';
 
   const video = document.getElementById('video');
@@ -32,7 +44,10 @@
   const ctx = canvas.getContext('2d');
   const beep = document.getElementById('beep');
 
-  const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+  const hands = new Hands({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+  });
+
   hands.setOptions({
     maxNumHands: 2,
     modelComplexity: 1,
@@ -41,8 +56,8 @@
   });
 
   hands.onResults(results => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth || canvas.width;
+    canvas.height = video.videoHeight || canvas.height;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(video,0,0,canvas.width,canvas.height);
 
@@ -51,29 +66,37 @@
         drawConnectors(ctx, landmarks, Hands.HAND_CONNECTIONS, {color:'green', lineWidth:3});
         drawLandmarks(ctx, landmarks, {color:'red', lineWidth:2});
       }
-      // Toca beep se detectar pelo menos 1 mão
-      beep.play();
+      beep.play(); // toca beep ao detectar pelo menos uma mão
     }
   });
 
-  let cameraInstance;
-
-  document.getElementById('startCamBtn').addEventListener('click', ()=>{
-    video.style.display = 'block';
-    cameraInstance = new Camera(video, {
-      onFrame: async ()=>{ await hands.send({image: video}); },
-      width: 640,
-      height: 480
-    });
-    cameraInstance.start();
+  // Função para abrir câmera
+  document.getElementById('startCamBtn').addEventListener('click', async ()=>{
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({video:true});
+      video.srcObject = stream;
+      video.style.display = 'block';
+      await video.play();
+      requestAnimationFrame(runDetection);
+    } catch(err) {
+      alert('Permissão negada ou câmera não disponível: ' + err.message);
+    }
   });
+
+  // Loop de detecção
+  async function runDetection(){
+    if(video.srcObject){
+      await hands.send({image: video});
+      requestAnimationFrame(runDetection);
+    }
+  }
 
   // Upload de imagem ou vídeo
   document.getElementById('uploadFile').addEventListener('change', e=>{
     const file = e.target.files[0];
     if(!file) return;
-
     const url = URL.createObjectURL(file);
+
     if(file.type.startsWith('image')){
       video.style.display='none';
       const img = new Image();
