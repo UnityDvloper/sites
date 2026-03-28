@@ -4,20 +4,73 @@
 <meta charset="UTF-8">
 <title>Detector de Mão</title>
 <style>
+  /* Reset básico */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    margin:0;
-    font-family:sans-serif;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom, #f0f4f8, #d9e2ec);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
   }
+
+  h2 {
+    margin-bottom: 15px;
+    color: #1f3c88;
+    text-align: center;
+  }
+
+  #controls {
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  button, input[type="file"] {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+
+  button {
+    background-color: #1f3c88;
+    color: white;
+  }
+
+  button:hover {
+    background-color: #3f5db5;
+  }
+
+  input[type="file"] {
+    background-color: #e1e7f0;
+  }
+
   video, canvas {
     max-width: 100%;
-    border:1px solid black;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   }
-  #controls {
-    margin:10px;
+
+  canvas {
+    margin-top: 10px;
+  }
+
+  /* Mensagem de alerta */
+  #message {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #d9534f;
+    text-align: center;
   }
 </style>
 </head>
@@ -32,6 +85,7 @@
 
 <video id="video" autoplay playsinline muted style="display:none;"></video>
 <canvas id="canvas"></canvas>
+<div id="message"></div>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
@@ -43,6 +97,7 @@
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   const beep = document.getElementById('beep');
+  const message = document.getElementById('message');
 
   const hands = new Hands({
     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
@@ -66,7 +121,10 @@
         drawConnectors(ctx, landmarks, Hands.HAND_CONNECTIONS, {color:'green', lineWidth:3});
         drawLandmarks(ctx, landmarks, {color:'red', lineWidth:2});
       }
-      beep.play(); // toca beep ao detectar pelo menos uma mão
+      beep.play();
+      message.textContent = `Mão detectada!`;
+    } else {
+      message.textContent = '';
     }
   });
 
@@ -79,7 +137,7 @@
       await video.play();
       requestAnimationFrame(runDetection);
     } catch(err) {
-      alert('Permissão negada ou câmera não disponível: ' + err.message);
+      message.textContent = 'Permissão negada ou câmera não disponível: ' + err.message;
     }
   });
 
