@@ -1,296 +1,714 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Mini Multiplayer Visual</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Agar.io Clone - Multi-tab Otimizado</title>
 <style>
-  /* === VISUAL MELHORADO === */
-  body { 
-    margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    background: #1a1a2e; color: #fff; text-align: center; 
-  }
-  h1 { margin-top: 30px; color: #e94560; text-transform: uppercase; letter-spacing: 2px; }
+  body { margin:0; overflow:hidden; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#111; color:#fff; user-select: none; touch-action: none; }
   
-  #roomDiv {
-    background: #16213e; padding: 30px; border-radius: 10px; width: 400px;
-    margin: 40px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-  }
-  input {
-    padding: 12px; width: 80%; border: none; border-radius: 5px; margin-bottom: 15px;
-    font-size: 16px; text-align: center; outline: none;
-  }
-  button { 
-    padding: 12px 20px; border: none; border-radius: 5px; background: #e94560; 
-    color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; margin: 5px;
-  }
-  button:hover { background: #ff5773; transform: scale(1.05); }
-
-  #game { 
-    display: none; position: relative; width: 800px; height: 500px; margin: 20px auto; 
-    border: 4px solid #0f3460; background: #222; overflow: hidden; border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-  }
+  /* UI Elements */
+  .screen { position:absolute; top:0; left:0; width:100vw; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:10; }
+  .hidden { display:none !important; }
+  .panel { background:#222; padding:30px; border-radius:12px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 320px; border: 1px solid #444; }
   
-  /* Informações da Sala e Placar */
-  #gameHeader {
-    display: flex; justify-content: space-between; padding: 10px 20px; 
-    background: rgba(15, 52, 96, 0.8); border-bottom: 2px solid #0f3460;
-  }
-  #roomCodeDisplay { font-weight: bold; color: #00ffcc; font-size: 18px; }
-  #scoreboard { font-size: 18px; font-weight: bold; }
-
-  /* Jogadores */
-  .player { 
-    position: absolute; width: 50px; height: 50px; border-radius: 8px; 
-    box-shadow: 0 0 15px rgba(255,255,255,0.2); transition: top 0.1s, left 0.1s;
-    display: none; /* Escondido até entrar na sala */
-  }
-  #player1 { background: #ff3366; } /* Vermelho neon */
-  #player2 { background: #33ccff; } /* Azul neon */
+  h1, h2, h3 { margin-top: 0; color: #00d2ff; }
+  input, select { padding:10px; margin:10px 0; width:calc(100% - 24px); border-radius:6px; border:1px solid #555; outline:none; font-size:16px; text-align: center; background:#333; color:white; }
+  input[readonly] { background: #444; font-family: monospace; letter-spacing: 1px;}
   
-  .healthBarContainer {
-    position: absolute; top: -15px; left: 0; width: 100%; height: 6px; 
-    background: #555; border-radius: 3px; overflow: hidden;
-  }
-  .healthBar { height: 100%; background: #00ffcc; width: 100%; transition: width 0.2s; }
+  button { padding:12px 20px; margin:5px; border:none; border-radius:6px; background:#0078d7; color:white; font-size:16px; cursor:pointer; transition: 0.2s; font-weight: bold; }
+  button:hover { background:#005a9e; }
+  button.danger { background: #d72638; }
+  button.danger:hover { background: #a11c29; }
+  button.admin { background: #9c27b0; }
+  button.admin:hover { background: #7b1fa2; }
+  button.small { padding: 8px 12px; font-size: 14px; }
   
-  /* Balas */
-  .bullet { position: absolute; width: 12px; height: 12px; background: #ffff00; border-radius: 50%; box-shadow: 0 0 10px #ffff00; }
+  .flex-row { display: flex; justify-content: center; align-items: center; gap: 5px; }
+  
+  .player-list { list-style:none; padding:0; margin: 20px 0; max-height: 200px; overflow-y: auto; text-align: left; }
+  .player-list li { background: #333; padding: 10px; margin-bottom: 5px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+  /* In-Game UI */
+  #game-ui { position:absolute; top:0; left:0; width: 100vw; height: 100vh; z-index:5; pointer-events: none; }
+  
+  /* Placar sempre cravado na Direita */
+  #leaderboard { position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.6); padding:15px; border-radius:8px; font-family: monospace; min-width: 150px; pointer-events: auto; }
+  
+  /* Menu Admin sempre cravado na Esquerda */
+  #host-controls { position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.8); padding:15px; border-radius:8px; pointer-events: auto; display: flex; flex-direction: column; gap: 5px; border: 1px solid #9c27b0; min-width: 200px; max-height: 90vh; overflow-y: auto;}
+  #host-controls h4 { margin: 0 0 10px 0; color: #ffeb3b; text-align: center; }
+  
+  /* Joystick */
+  #joystick { position:absolute; bottom:30px; left:30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.1); touch-action:none; display:none; z-index: 5; border: 2px solid rgba(255,255,255,0.2); }
+  #stick { width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.4); position:absolute; top:30px; left:30px; pointer-events: none; transition: transform 0.05s linear; }
+  
+  canvas { display:block; background:#1a1a1a; }
 </style>
 </head>
 <body>
 
-<h1>Batalha Multiplayer</h1>
-
-<div id="roomDiv">
-  <h3>Jogue com um amigo</h3>
-  <input type="text" id="roomIdInput" placeholder="Digite o Código da Sala">
-  <br>
-  <button onclick="createRoom()">Criar Nova Sala</button>
-  <button onclick="joinRoom()" style="background: #0f3460;">Entrar na Sala</button>
-</div>
-
-<div id="game">
-  <div id="gameHeader">
-    <div id="roomCodeDisplay">Sala: Aguardando...</div>
-    <div id="scoreboard">Placar: 0 x 0</div>
-  </div>
-  
-  <div id="bulletsContainer"></div>
-
-  <div id="player1" class="player">
-    <div class="healthBarContainer"><div class="healthBar" id="hp1"></div></div>
-  </div>
-  <div id="player2" class="player">
-    <div class="healthBarContainer"><div class="healthBar" id="hp2"></div></div>
+<div id="start-screen" class="screen">
+  <div class="panel">
+    <h1>AGAR.IO CLONE</h1>
+    <input type="text" id="playerName" placeholder="Digite seu Nome" maxlength="15">
+    <div>
+      <button onclick="startHosting()">Criar Sala (Host)</button>
+      <button onclick="showJoinScreen()">Entrar (Guest)</button>
+    </div>
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<div id="join-screen" class="screen hidden">
+  <div class="panel">
+    <h2>Entrar na Sala</h2>
+    <input type="text" id="roomInput" placeholder="Cole o Código da Sala">
+    <button onclick="joinRoom()">Conectar</button>
+    <button class="danger" onclick="backToMain()">Voltar</button>
+  </div>
+</div>
+
+<div id="host-lobby-screen" class="screen hidden">
+  <div class="panel">
+    <h2>Lobby (Host)</h2>
+    <div class="flex-row">
+      <input type="text" id="generatedRoomCode" readonly>
+      <button class="small" onclick="copyRoomCode()">Copiar</button>
+    </div>
+    <ul class="player-list" id="host-player-list"></ul>
+    <button onclick="startGame()" style="background: #28a745; width: 100%;">Começar Jogo</button>
+    <button class="danger" onclick="closeRoom()" style="width: 100%;">Fechar Sala</button>
+  </div>
+</div>
+
+<div id="guest-lobby-screen" class="screen hidden">
+  <div class="panel">
+    <h2>Aguardando Host...</h2>
+    <p>Conectado na sala: <strong id="guest-room-display"></strong></p>
+    <ul class="player-list" id="guest-player-list"></ul>
+    <button class="danger" onclick="leaveRoom()">Sair da Sala</button>
+  </div>
+</div>
+
+<button id="btnOpenAdmin" class="hidden admin" onclick="toggleAdminPanel()" style="position: absolute; top: 10px; left: 10px; z-index: 6;">Admin Panel</button>
+
+<div id="game-ui" class="hidden">
+  <div id="host-controls" class="hidden">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h4 style="margin: 0;">Menu Admin</h4>
+        <button class="small danger" onclick="toggleAdminPanel()" style="margin: 0; padding: 2px 8px;">X</button>
+    </div>
+    <button class="small" onclick="spawnBot()">+ Adicionar Bot</button>
+    <button class="small danger" onclick="removeBot()">- Remover Bot</button>
+    <hr style="border-color: #555; width: 100%; margin: 10px 0;">
+    
+    <label style="font-size: 12px; color: #ccc;">Selecionar Jogador/Bot:</label>
+    <select id="adminPlayerSelect" onclick="updateAdminPlayerSelect(false)"></select>
+    
+    <label style="font-size: 12px; color: #ccc;">Quantidade de Massa:</label>
+    <div style="display: flex; gap: 5px;">
+        <input type="number" id="adminMassAmount" value="50" style="margin: 0; width: 70px;">
+        <button class="small admin" onclick="giveMass()" style="flex-grow: 1; margin: 0;">Dar Massa</button>
+    </div>
+  </div>
+  <div id="leaderboard">Carregando...</div>
+</div>
+
+<div id="joystick"><div id="stick"></div></div>
+<canvas id="canvas"></canvas>
 
 <script>
-// === Configuração do Firebase ===
-const firebaseConfig = {
-  apiKey: "AIzaSyBnGBqNYQewQsX-rHVwRrcrqbw1Dw27lvM",
-  authDomain: "minimultiplayergame-f508c.firebaseapp.com",
-  projectId: "minimultiplayergame-f508c",
-  storageBucket: "minimultiplayergame-f508c.firebasestorage.app",
-  messagingSenderId: "766336023232",
-  appId: "1:766336023232:web:1ca9f60f4ccff2537f4b25",
-  measurementId: "G-KHR7PB90RP"
+// ==========================================
+// CONFIGURAÇÕES GERAIS E VARIÁVEIS DE ESTADO
+// ==========================================
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const MAP_WIDTH = 4000;
+const MAP_HEIGHT = 4000;
+const MAX_FOOD = 500;
+
+let myId = 'p_' + Math.random().toString(36).substr(2, 9);
+let myName = "Guest";
+let currentRoom = null;
+let isHost = false;
+let gameState = 'menu';
+
+let players = {};
+let foodList = [];
+let bots = {};
+
+let moveDir = { x: 0, y: 0 };
+let camera = { x: 0, y: 0 };
+let gameLoopInterval = null;
+let networkInterval = null; 
+let foodChanged = true; // Flag para otimizar rede
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ==========================================
+// COMUNICAÇÃO MULTI-ABA (BroadcastChannel)
+// ==========================================
+const channel = new BroadcastChannel('agario_network');
+
+channel.onmessage = (event) => {
+  const data = event.data;
+
+  if (isHost && data.type === 'JOIN_REQUEST' && data.room === currentRoom) {
+    if (gameState !== 'lobby') return;
+    players[data.id] = { id: data.id, name: data.name, x: Math.random()*MAP_WIDTH, y: Math.random()*MAP_HEIGHT, size: 20, color: getRandomColor(), isBot: false };
+    broadcastLobbyUpdate();
+  }
+
+  if (!isHost && data.type === 'LOBBY_UPDATE' && data.room === currentRoom) {
+    if (data.kicked && data.kicked === myId) {
+      alert("Você foi expulso pelo Host.");
+      leaveRoom();
+      return;
+    }
+    players = data.players;
+    updateGuestLobbyUI();
+  }
+
+  if (!isHost && data.type === 'START_GAME' && data.room === currentRoom) {
+    startGameClient();
+  }
+
+  if (isHost && data.type === 'PLAYER_INPUT' && data.room === currentRoom) {
+    if (players[data.id]) {
+      players[data.id].targetX = data.dirX;
+      players[data.id].targetY = data.dirY;
+    }
+  }
+
+  if (!isHost && data.type === 'GAME_STATE' && data.room === currentRoom) {
+    players = data.players;
+    bots = data.bots;
+    // OTIMIZAÇÃO DE REDE: Só atualiza a lista de comida se o Host enviar (reduz lag brutalmente)
+    if (data.food) {
+        foodList = data.food;
+    }
+  }
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// === Variáveis do jogo ===
-let roomId = "", playerId = Math.random().toString(36).substr(2,5);
-let isCreator = false, players = [], bullets = [];
-let keys = {}; // Para movimento mais suave
-
-// === Criar Sala ===
-async function createRoom() {
-  roomId = Math.random().toString(36).substr(2,5).toUpperCase();
-  isCreator = true;
-  players = [{id: playerId, x: 50, y: 200, life: 3, points: 0}];
-  
-  await db.collection("rooms").doc(roomId).set({players: players, bullets: []});
-  
-  document.getElementById("roomCodeDisplay").innerText = "Código da Sala: " + roomId;
-  startGame();
+// ==========================================
+// LÓGICA DE UI E TELAS
+// ==========================================
+function switchScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  if (screenId) document.getElementById(screenId).classList.remove('hidden');
 }
 
-// === Entrar Sala ===
-async function joinRoom() {
-  const input = document.getElementById("roomIdInput").value.toUpperCase().trim();
-  if(!input) return alert("Digite um código de sala!");
-  
-  const roomRef = db.collection("rooms").doc(input);
-  const snap = await roomRef.get();
-  
-  if(!snap.exists) return alert("Sala não existe!");
-  let data = snap.data();
-  if(data.players.length >= 2) return alert("Sala cheia!");
-  
-  roomId = input;
-  players = data.players;
-  players.push({id: playerId, x: 700, y: 200, life: 3, points: 0});
-  
-  await roomRef.update({players: players});
-  document.getElementById("roomCodeDisplay").innerText = "Código da Sala: " + roomId;
-  startGame();
+function backToMain() {
+  currentRoom = null;
+  isHost = false;
+  gameState = 'menu';
+  if (gameLoopInterval) clearInterval(gameLoopInterval);
+  if (networkInterval) clearInterval(networkInterval);
+  switchScreen('start-screen');
+  document.getElementById('game-ui').classList.add('hidden');
+  document.getElementById('btnOpenAdmin').classList.add('hidden');
 }
 
-// === Iniciar Jogo ===
+function showJoinScreen() {
+  const name = document.getElementById('playerName').value.trim();
+  myName = name || "Jogador_" + Math.floor(Math.random()*100);
+  switchScreen('join-screen');
+}
+
+function copyRoomCode() {
+  const code = document.getElementById('generatedRoomCode');
+  navigator.clipboard.writeText(code.value).then(() => {
+    alert("Código da sala copiado!");
+  });
+}
+
+// ==========================================
+// LÓGICA DO HOST & ADMIN PANEL
+// ==========================================
+function startHosting() {
+  const name = document.getElementById('playerName').value.trim();
+  myName = name || "Host_" + Math.floor(Math.random()*100);
+  
+  currentRoom = 'SALA-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  isHost = true;
+  gameState = 'lobby';
+  
+  players = {};
+  bots = {};
+  players[myId] = { id: myId, name: myName, x: MAP_WIDTH/2, y: MAP_HEIGHT/2, size: 20, color: '#00d2ff', isBot: false };
+  
+  document.getElementById('generatedRoomCode').value = currentRoom;
+  switchScreen('host-lobby-screen');
+  updateHostLobbyUI();
+}
+
+function broadcastLobbyUpdate(kickedId = null) {
+  channel.postMessage({ type: 'LOBBY_UPDATE', room: currentRoom, players: players, kicked: kickedId });
+  updateHostLobbyUI();
+}
+
+function kickPlayer(id) {
+  delete players[id];
+  broadcastLobbyUpdate(id);
+}
+
+function closeRoom() {
+  currentRoom = null;
+  players = {};
+  backToMain();
+}
+
+function updateHostLobbyUI() {
+  const list = document.getElementById('host-player-list');
+  list.innerHTML = '';
+  Object.values(players).forEach(p => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${p.name} ${p.id === myId ? '(Você)' : ''}</span>`;
+    if (p.id !== myId) {
+      const btn = document.createElement('button');
+      btn.className = 'small danger';
+      btn.innerText = 'Kick';
+      btn.onclick = () => kickPlayer(p.id);
+      li.appendChild(btn);
+    }
+    list.appendChild(li);
+  });
+}
+
 function startGame() {
-  document.getElementById("roomDiv").style.display = "none";
-  document.getElementById("game").style.display = "block";
-  listenRoom();
+  gameState = 'playing';
+  spawnInitialFood();
   
-  // Loop de movimento local (60fps)
-  requestAnimationFrame(gameLoop);
+  channel.postMessage({ type: 'START_GAME', room: currentRoom });
+  switchScreen(null);
   
-  // Salva no banco de dados a cada 100ms para não travar o Firebase
-  setInterval(syncToServer, 100);
+  document.getElementById('game-ui').classList.remove('hidden');
+  document.getElementById('btnOpenAdmin').classList.remove('hidden');
+  
+  // Separando o loop de física (60fps) do loop de Rede (20fps) para tirar o Lag do Guest
+  gameLoopInterval = setInterval(hostPhysicsStep, 1000 / 60);
+  networkInterval = setInterval(broadcastGameState, 1000 / 20); 
+  requestAnimationFrame(renderLoop);
 }
 
-// === Ouvir mudanças na sala do Firebase ===
-function listenRoom() {
-  db.collection("rooms").doc(roomId).onSnapshot(doc => {
-    let data = doc.data();
-    if(!data) return;
+function broadcastGameState() {
+    if (gameState !== 'playing') return;
+    let msg = { type: 'GAME_STATE', room: currentRoom, players, bots };
+    // Só envia a array gigante de comida se houver mudanças reais nela
+    if (foodChanged) {
+        msg.food = foodList;
+        foodChanged = false;
+    }
+    channel.postMessage(msg);
+}
+
+// ---- Funções do Painel Admin ----
+function toggleAdminPanel() {
+    if(!isHost) return;
+    const panel = document.getElementById('host-controls');
+    const btn = document.getElementById('btnOpenAdmin');
     
-    // Pega os dados que vieram do outro jogador
-    let otherPlayerId = players.find(p => p.id !== playerId)?.id;
-    if (otherPlayerId && data.players) {
-        let remoteOtherPlayer = data.players.find(p => p.id === otherPlayerId);
-        let localOtherPlayer = players.find(p => p.id === otherPlayerId);
-        if(remoteOtherPlayer && localOtherPlayer) {
-            localOtherPlayer.x = remoteOtherPlayer.x;
-            localOtherPlayer.y = remoteOtherPlayer.y;
-            localOtherPlayer.life = remoteOtherPlayer.life;
-            localOtherPlayer.points = remoteOtherPlayer.points;
-        }
+    if(panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        btn.classList.add('hidden');
+        updateAdminPlayerSelect(true);
     } else {
-        // Se eu sou o host e o player 2 acabou de entrar
-        players = data.players;
+        panel.classList.add('hidden');
+        btn.classList.remove('hidden');
+    }
+}
+
+function updateAdminPlayerSelect(forceUpdate = false) {
+    const select = document.getElementById('adminPlayerSelect');
+    if (!forceUpdate && select.options.length > 0) return; // evita refazer a lista à toa
+    
+    const currentVal = select.value;
+    select.innerHTML = '';
+    
+    // Agrupa jogadores
+    Object.values(players).forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.innerText = `[Jog] ${p.name} ${p.id === myId ? '(Você)' : ''}`;
+        select.appendChild(opt);
+    });
+    // Agrupa bots
+    Object.values(bots).forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.id;
+        opt.innerText = `[Bot] ${b.name}`;
+        select.appendChild(opt);
+    });
+    
+    if(currentVal && (players[currentVal] || bots[currentVal])) {
+        select.value = currentVal;
+    }
+}
+
+function spawnBot() {
+  if (!isHost) return;
+  let bId = 'bot_' + Math.random().toString(36).substr(2, 6);
+  bots[bId] = { id: bId, name: 'Bot ' + Math.floor(Math.random()*100), x: Math.random()*MAP_WIDTH, y: Math.random()*MAP_HEIGHT, size: 20, color: getRandomColor(), isBot: true };
+  updateAdminPlayerSelect(true);
+}
+
+function removeBot() {
+  if (!isHost) return;
+  const botKeys = Object.keys(bots);
+  if (botKeys.length > 0) {
+    delete bots[botKeys[botKeys.length - 1]]; // Remove o ultimo bot criado
+    updateAdminPlayerSelect(true);
+  }
+}
+
+function giveMass() {
+  if (!isHost) return;
+  const targetId = document.getElementById('adminPlayerSelect').value;
+  const amount = parseFloat(document.getElementById('adminMassAmount').value) || 0;
+  
+  if (players[targetId]) {
+      players[targetId].size += amount;
+  } else if (bots[targetId]) {
+      bots[targetId].size += amount;
+  }
+}
+
+// ==========================================
+// LÓGICA DO GUEST
+// ==========================================
+function joinRoom() {
+  const code = document.getElementById('roomInput').value.trim().toUpperCase();
+  if (!code) return alert("Digite o código da sala.");
+  
+  currentRoom = code;
+  gameState = 'lobby';
+  
+  channel.postMessage({ type: 'JOIN_REQUEST', room: currentRoom, id: myId, name: myName });
+  document.getElementById('guest-room-display').innerText = currentRoom;
+  switchScreen('guest-lobby-screen');
+}
+
+function updateGuestLobbyUI() {
+  const list = document.getElementById('guest-player-list');
+  list.innerHTML = '';
+  Object.values(players).forEach(p => {
+    const li = document.createElement('li');
+    li.innerText = `${p.name} ${p.id === myId ? '(Você)' : ''}`;
+    list.appendChild(li);
+  });
+}
+
+function leaveRoom() {
+  currentRoom = null;
+  players = {};
+  backToMain();
+}
+
+function startGameClient() {
+  gameState = 'playing';
+  switchScreen(null);
+  document.getElementById('game-ui').classList.remove('hidden');
+  
+  // Guest envia input a 30fps para não sobrecarregar
+  gameLoopInterval = setInterval(sendGuestInput, 1000 / 30);
+  requestAnimationFrame(renderLoop);
+}
+
+function sendGuestInput() {
+  if (gameState !== 'playing') return;
+  channel.postMessage({ type: 'PLAYER_INPUT', room: currentRoom, id: myId, dirX: moveDir.x, dirY: moveDir.y });
+}
+
+// ==========================================
+// MOTOR DE FÍSICA (SÓ RODA NO HOST)
+// ==========================================
+function spawnInitialFood() {
+  foodList = [];
+  for(let i=0; i<MAX_FOOD; i++) {
+    foodList.push({ x: Math.random()*MAP_WIDTH, y: Math.random()*MAP_HEIGHT, color: getRandomColor() });
+  }
+  foodChanged = true;
+}
+
+function getSpeed(size) {
+  return Math.max(1.5, 2 + (100 / (size + 10)));
+}
+
+function hostPhysicsStep() {
+  if (gameState !== 'playing') return;
+
+  if (players[myId]) {
+    players[myId].targetX = moveDir.x;
+    players[myId].targetY = moveDir.y;
+  }
+
+  let allEntities = Object.values(players).concat(Object.values(bots));
+
+  Object.values(players).forEach(p => {
+    if (p.targetX !== undefined && p.targetY !== undefined) {
+      let speed = getSpeed(p.size);
+      p.x += p.targetX * speed;
+      p.y += p.targetY * speed;
+      p.x = Math.max(p.size, Math.min(MAP_WIDTH - p.size, p.x));
+      p.y = Math.max(p.size, Math.min(MAP_HEIGHT - p.size, p.y));
+    }
+  });
+
+  Object.values(bots).forEach(b => {
+    let speed = getSpeed(b.size);
+    let target = null;
+    let action = 'wander';
+    let minDist = Infinity;
+
+    allEntities.forEach(p => {
+      if (p.id === b.id) return;
+      let d = Math.hypot(p.x - b.x, p.y - b.y);
+      if (d < 500) {
+        if (p.size > b.size * 1.15) { 
+          action = 'flee'; target = p; minDist = -1;
+        } else if (b.size > p.size * 1.15 && d < minDist && action !== 'flee') {
+          action = 'chase'; target = p; minDist = d;
+        }
+      }
+    });
+
+    if (action === 'wander') {
+      foodList.forEach(f => {
+        let d = Math.hypot(f.x - b.x, f.y - b.y);
+        if (d < minDist && d < 400) { minDist = d; target = f; }
+      });
+    }
+
+    if (target) {
+      let dx = target.x - b.x;
+      let dy = target.y - b.y;
+      let mag = Math.hypot(dx, dy);
+      if (mag > 0) {
+        if (action === 'flee') { dx = -dx; dy = -dy; speed *= 1.1; }
+        b.x += (dx / mag) * speed;
+        b.y += (dy / mag) * speed;
+      }
+    } else {
+      b.x += (Math.random() - 0.5) * speed * 2;
+      b.y += (Math.random() - 0.5) * speed * 2;
     }
     
-    // Atualiza balas que vieram do servidor
-    bullets = data.bullets || [];
-    updateVisual();
+    b.x = Math.max(b.size, Math.min(MAP_WIDTH - b.size, b.x));
+    b.y = Math.max(b.size, Math.min(MAP_HEIGHT - b.size, b.y));
   });
-}
 
-// === Atualizar visual na tela ===
-function updateVisual() {
-  const p1 = document.getElementById("player1");
-  const p2 = document.getElementById("player2");
-  const bulletsDiv = document.getElementById("bulletsContainer");
-
-  // Atualiza Jogador 1 (Criador)
-  if(players[0]) { 
-    p1.style.display = "block";
-    p1.style.left = players[0].x + "px"; 
-    p1.style.top = players[0].y + "px"; 
-    document.getElementById("hp1").style.width = (players[0].life / 3 * 100) + "%"; 
-  }
-  
-  // Atualiza Jogador 2 (Convidado)
-  if(players[1]) { 
-    p2.style.display = "block";
-    p2.style.left = players[1].x + "px"; 
-    p2.style.top = players[1].y + "px"; 
-    document.getElementById("hp2").style.width = (players[1].life / 3 * 100) + "%"; 
-  }
-
-  // Atualiza Placar
-  let scoreText = `P1: ${players[0]?.points || 0} x P2: ${players[1]?.points || 0}`;
-  document.getElementById("scoreboard").innerText = scoreText;
-
-  // Atualiza Balas (Desenha as bolinhas amarelas)
-  bulletsDiv.innerHTML = ""; // limpa antigas
-  bullets.forEach(b => {
-    let div = document.createElement("div");
-    div.className = "bullet";
-    div.style.left = b.x + "px";
-    div.style.top = b.y + "px";
-    bulletsDiv.appendChild(div);
-  });
-}
-
-// === Controles de Teclado ===
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-// Evento de atirar avulso (apertar uma vez só)
-document.addEventListener("keydown", e => {
-  if (e.key === " " && isCreator) shoot();
-  if (e.key === "Enter" && !isCreator) shoot();
-});
-
-function shoot() {
-  let me = players.find(p => p.id === playerId);
-  if(!me) return;
-  
-  // Posição de onde o tiro sai (meio do quadrado)
-  let bullet = { x: me.x + 20, y: me.y + 20, owner: playerId };
-  bullets.push(bullet);
-}
-
-// === Loop Local do Jogo (Movimento e Colisão) ===
-function gameLoop() {
-  let me = players.find(p => p.id === playerId);
-  if(me) {
-    // Movimentação do Jogador Atual
-    let speed = 5;
-    if (isCreator) { // P1 usa WASD
-      if(keys["w"] && me.y > 0) me.y -= speed;
-      if(keys["s"] && me.y < 450) me.y += speed;
-      if(keys["a"] && me.x > 0) me.x -= speed;
-      if(keys["d"] && me.x < 750) me.x += speed;
-    } else { // P2 usa Setas
-      if(keys["ArrowUp"] && me.y > 0) me.y -= speed;
-      if(keys["ArrowDown"] && me.y < 450) me.y += speed;
-      if(keys["ArrowLeft"] && me.x > 0) me.x -= speed;
-      if(keys["ArrowRight"] && me.x < 750) me.x += speed;
+  for (let i = foodList.length - 1; i >= 0; i--) {
+    let f = foodList[i];
+    let eaten = false;
+    for (let e of allEntities) {
+      if (Math.hypot(e.x - f.x, e.y - f.y) < e.size) {
+        e.size += 0.3;
+        eaten = true;
+        break;
+      }
+    }
+    if (eaten) {
+      foodList.splice(i, 1);
+      foodList.push({ x: Math.random()*MAP_WIDTH, y: Math.random()*MAP_HEIGHT, color: getRandomColor() });
+      foodChanged = true; // Avisa o sistema de rede que a comida mudou
     }
   }
 
-  // Apenas o Host (Criador) calcula a física das balas para não dar conflito
-  if (isCreator) {
-    for (let i = bullets.length - 1; i >= 0; i--) {
-      let b = bullets[i];
-      // P1 atira pra direita (+10), P2 atira pra esquerda (-10)
-      b.x += (b.owner === players[0]?.id ? 10 : -10);
+  for (let i = 0; i < allEntities.length; i++) {
+    for (let j = i + 1; j < allEntities.length; j++) {
+      let e1 = allEntities[i];
+      let e2 = allEntities[j];
+      let dist = Math.hypot(e1.x - e2.x, e1.y - e2.y);
       
-      // Remove bala fora da tela
-      if(b.x < 0 || b.x > 800) { bullets.splice(i, 1); continue; }
-      
-      // Colisão com jogadores
-      let target = players.find(p => p.id !== b.owner);
-      if(target && b.x >= target.x && b.x <= target.x + 50 && b.y >= target.y && b.y <= target.y + 50) {
-        target.life -= 1;
-        if(target.life <= 0) {
-          target.life = 3; // Reseta a vida
-          let shooter = players.find(p => p.id === b.owner);
-          if (shooter) shooter.points += 1;
+      if (dist < Math.max(e1.size, e2.size) * 0.8) { 
+        if (e1.size > e2.size * 1.15) {
+          e1.size += e2.size / 2.5;
+          killEntity(e2);
+        } else if (e2.size > e1.size * 1.15) {
+          e2.size += e1.size / 2.5;
+          killEntity(e1);
         }
-        bullets.splice(i, 1); // Destrói a bala
       }
     }
   }
-
-  updateVisual();
-  requestAnimationFrame(gameLoop); // Roda isso suave a 60 frames por segundo
 }
 
-// === Envia os dados para o Firebase sem travar (10 vezes por segundo) ===
-function syncToServer() {
-  if (roomId && players.length > 0) {
-    db.collection("rooms").doc(roomId).update({ players: players, bullets: bullets });
+function killEntity(e) {
+  if (e.isBot) {
+    delete bots[e.id];
+    updateAdminPlayerSelect(true);
+  } else {
+    e.size = 20;
+    e.x = Math.random() * MAP_WIDTH;
+    e.y = Math.random() * MAP_HEIGHT;
   }
+}
+
+// ==========================================
+// RENDERIZAÇÃO E CÂMERA (HOST E GUEST)
+// ==========================================
+function renderLoop() {
+  if (gameState !== 'playing') return;
+
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  let me = players[myId];
+  if (me) {
+    camera.x += (me.x - camera.x) * 0.1;
+    camera.y += (me.y - camera.y) * 0.1;
+  }
+
+  ctx.save();
+  ctx.translate(canvas.width/2 - camera.x, canvas.height/2 - camera.y);
+
+  drawGrid();
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 10;
+  ctx.strokeRect(0, 0, MAP_WIDTH, MAP_HEIGHT);
+
+  foodList.forEach(f => {
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, 6, 0, Math.PI*2);
+    ctx.fillStyle = f.color;
+    ctx.fill();
+  });
+
+  let allEntities = Object.values(players).concat(Object.values(bots));
+  allEntities.sort((a,b) => a.size - b.size);
+
+  allEntities.forEach(e => {
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, e.size, 0, Math.PI*2);
+    ctx.fillStyle = e.color;
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = darkenColor(e.color, 40);
+    ctx.stroke();
+
+    ctx.fillStyle = "white";
+    let fontSize = Math.max(12, Math.min(24, e.size / 2));
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(e.name, e.x, e.y);
+  });
+
+  ctx.restore();
+  updateLeaderboard(allEntities);
+
+  requestAnimationFrame(renderLoop);
+}
+
+function drawGrid() {
+  ctx.strokeStyle = '#2a2a2a';
+  ctx.lineWidth = 2;
+  const gridSize = 100;
+  for (let x = 0; x <= MAP_WIDTH; x += gridSize) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, MAP_HEIGHT); ctx.stroke();
+  }
+  for (let y = 0; y <= MAP_HEIGHT; y += gridSize) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(MAP_WIDTH, y); ctx.stroke();
+  }
+}
+
+function updateLeaderboard(entities) {
+  let sorted = [...entities].sort((a,b) => b.size - a.size).slice(0, 10);
+  let html = "<div style='color:#00d2ff; font-weight:bold; margin-bottom:5px; text-align:center;'>Placar</div>";
+  sorted.forEach((e, i) => {
+    html += `<div style="display:flex; justify-content:space-between; width:100%;">
+                <span>${i+1}. ${e.name}</span>
+                <span style="color:#ffeb3b; margin-left:10px;">${Math.floor(e.size)}</span>
+             </div>`;
+  });
+  document.getElementById('leaderboard').innerHTML = html;
+}
+
+// ==========================================
+// CONTROLES (MOUSE E JOYSTICK MOBILE FIXO)
+// ==========================================
+canvas.addEventListener('mousemove', (e) => {
+  if(gameState !== 'playing' || isMobile) return;
+  let dx = e.clientX - (canvas.width / 2);
+  let dy = e.clientY - (canvas.height / 2);
+  let mag = Math.hypot(dx, dy);
+  
+  if (mag > 10) { 
+    moveDir.x = dx / mag;
+    moveDir.y = dy / mag;
+  } else {
+    moveDir.x = 0; moveDir.y = 0;
+  }
+});
+
+let isMobile = /Mobi|Android/i.test(navigator.userAgent);
+if (isMobile) {
+  const joystick = document.getElementById('joystick');
+  const stick = document.getElementById('stick');
+  joystick.style.display = 'block';
+  
+  // Impede o comportamento padrão (scroll) no mobile
+  document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+
+  joystick.addEventListener('touchstart', handleJoystick, {passive: false});
+  joystick.addEventListener('touchmove', handleJoystick, {passive: false});
+  
+  function handleJoystick(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = joystick.getBoundingClientRect();
+    
+    // Calcula o centro do Joystick base
+    const centerX = rect.left + (rect.width / 2);
+    const centerY = rect.top + (rect.height / 2);
+    
+    let dx = touch.clientX - centerX;
+    let dy = touch.clientY - centerY;
+    
+    const maxDist = 40; // Limite de o quão longe a bolinha pode ir
+    const mag = Math.hypot(dx, dy);
+    
+    if (mag > maxDist) { 
+        dx = (dx/mag) * maxDist; 
+        dy = (dy/mag) * maxDist; 
+    }
+    
+    stick.style.transform = `translate(${dx}px, ${dy}px)`;
+    
+    // Normaliza os valores de direção entre -1 e 1 para o servidor
+    moveDir.x = dx / maxDist;
+    moveDir.y = dy / maxDist;
+  }
+
+  joystick.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    stick.style.transform = `translate(0px, 0px)`;
+    moveDir.x = 0; moveDir.y = 0;
+  });
+}
+
+// Utilitários de Cor
+function getRandomColor() {
+  const colors = ['#f54242','#42f560','#4287f5','#f5d442','#f542d1','#42f5f5'];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function darkenColor(color, percent) {
+  let R = parseInt(color.substring(1,3),16);
+  let G = parseInt(color.substring(3,5),16);
+  let B = parseInt(color.substring(5,7),16);
+  R = parseInt(R * (100 - percent) / 100);
+  G = parseInt(G * (100 - percent) / 100);
+  B = parseInt(B * (100 - percent) / 100);
+  R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
+  let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+  let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+  let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+  return "#"+RR+GG+BB;
 }
 </script>
 </body>
