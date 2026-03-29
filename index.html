@@ -1,125 +1,133 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Better Craftings Mod</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #121212;
-      color: #fff;
-    }
-
-    header {
-      background: #1f1f1f;
-      padding: 2rem;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      color: #ffb74d;
-    }
-
-    main {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    section {
-      margin-bottom: 3rem;
-    }
-
-    h2 {
-      color: #ffb74d;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      line-height: 1.6;
-    }
-
-    select {
-      padding: 0.5rem;
-      font-size: 1rem;
-      margin-right: 1rem;
-    }
-
-    .btn {
-      text-decoration: none;
-      padding: 0.6rem 1.2rem;
-      background: #ffb74d;
-      color: white;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    .btn:hover {
-      background: #ffa726;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1.5rem 0;
-      background: #1f1f1f;
-      margin-top: 2rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Better Craftings Mod</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background:#121212; color:#fff; }
+  header { background:#1f1f1f; padding:2rem; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.3); }
+  header h1 { margin:0; font-size:2.5rem; color:#ffb74d; }
+  main { max-width:900px; margin:2rem auto; padding:0 1rem; }
+  section { margin-bottom:3rem; }
+  h2 { color:#ffb74d; margin-bottom:1rem; }
+  p { line-height:1.6; }
+  select { padding:0.5rem; font-size:1rem; margin-right:1rem; }
+  .btn { text-decoration:none; padding:0.6rem 1.2rem; background:#ffb74d; color:black; border-radius:5px; font-weight:bold; font-size:1rem; }
+  .btn:hover { background:#ffa726; }
+  .yellow-text { color:#ffeb3b; font-weight:bold; }
+  .changelog, .recipes { background:#1f1f1f; padding:1rem; border-radius:5px; margin-top:1rem; }
+  .recipe-item { margin-bottom:0.5rem; }
+  footer { text-align:center; padding:1.5rem 0; background:#1f1f1f; margin-top:2rem; }
+</style>
 </head>
 <body>
-  <header>
-    <h1>Better Craftings Mod</h1>
-  </header>
+<header>
+  <h1>Better Craftings Mod</h1>
+</header>
 
-  <main>
-    <section class="sobre">
-      <h2>Sobre o Mod</h2>
-      <p>O <strong>Better Craftings</strong> é um mod para Minecraft que melhora o sistema de crafting, adicionando novas receitas e funcionalidades, compatível com Neoforge e versões recentes do Minecraft. Fácil de instalar e pronto para expandir sua experiência de jogo!</p>
-    </section>
+<main>
+  <section class="sobre">
+    <h2>Sobre o Mod</h2>
+    <p>O <strong>Better Craftings</strong> é um mod para Minecraft que melhora o sistema de crafting, adicionando novas receitas e funcionalidades. Compatível com Neoforge e versões recentes do Minecraft!</p>
+  </section>
 
-    <section class="downloads">
-      <h2>Baixe a versão mais recente</h2>
-      <select id="versoes"></select>
-      <a id="downloadBtn" href="#" download class="btn">Baixar</a>
-    </section>
-  </main>
+  <section class="downloads">
+    <h2 class="yellow-text">Baixe o Better Crafting</h2>
+    <select id="versoes"></select>
+    <a id="downloadBtn" href="#" download class="btn">Baixar</a>
 
-  <footer>
-    <p>&copy; 2026 Better Craftings Mod</p>
-  </footer>
+    <div id="changelog" class="changelog">
+      <h3>Changelog</h3>
+      <ul id="changelog-list"></ul>
+    </div>
 
-  <script>
-    // Lista de versões do mod (adicione novas facilmente)
-    const versoes = [
-      { nome: "better_craftings-1.0.0-neoforge-1.21.1 (mais recente)", arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar" },
-    ];
+    <div id="recipes" class="recipes">
+      <h3>Receitas desta versão</h3>
+      <ul id="recipes-list"></ul>
+    </div>
+  </section>
+</main>
 
-    const select = document.getElementById("versoes");
-    const downloadBtn = document.getElementById("downloadBtn");
+<footer>
+  <p>&copy; 2026 Better Craftings Mod</p>
+</footer>
 
-    // Preenche o dropdown
-    versoes.forEach((versao, index) => {
-      const option = document.createElement("option");
-      option.value = index;
-      option.textContent = versao.nome;
-      select.appendChild(option);
-    });
+<script>
+// --- Cada versão é um bloco fácil de adicionar ---
+const todasVersoes = [
+  {
+    nome: "better_craftings-1.0.0-neoforge-1.21.1 (mais recente)",
+    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
+    changelog: [
+      "Adicionado BetterGunpowderRecipe",
+      "Adicionado BetterRedstoneRecipe",
+      "Adicionado BetterCoalRecipe"
+    ],
+    receitas: [
+      "Better Gunpowder Recipe: 1 carvão + 1 redstone → 2 pólvoras (carvão vegetal também funciona, sem formação da receita)",
+      "Better Redstone Recipe: 1 carvão + 1 ferro → 2 redstones (carvão vegetal também funciona, sem formação da receita)",
+      "Better Coal Recipe: 1 charcoal → 1 carvão (sem formação da receita)"
+    ]
+  },
+  // 👇 Para adicionar novas versões, só copie esse bloco e mude os valores
+  /*
+  {
+    nome: "better_craftings-1.1.0-neoforge-1.21.1",
+    arquivo: "downloads/better_craftings-1.1.0-neoforge-1.21.1.jar",
+    changelog: [
+      "Corrigido bug X",
+      "Nova receita Y"
+    ],
+    receitas: [
+      "Nova Receita 1",
+      "Nova Receita 2"
+    ]
+  }
+  */
+];
 
-    // Atualiza o link de download quando muda a versão
-    select.addEventListener("change", () => {
-      const index = select.value;
-      downloadBtn.href = versoes[index].arquivo;
-    });
+// Elementos do DOM
+const select = document.getElementById("versoes");
+const downloadBtn = document.getElementById("downloadBtn");
+const changelogList = document.getElementById("changelog-list");
+const recipesList = document.getElementById("recipes-list");
 
-    // Define o mais recente como padrão
-    select.value = 0;
-    downloadBtn.href = versoes[0].arquivo;
-  </script>
+// Preenche dropdown
+todasVersoes.forEach((v,i)=>{
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = v.nome;
+  select.appendChild(opt);
+});
+
+// Função para atualizar changelog e receitas
+function updateVersion(i){
+  const v = todasVersoes[i];
+  downloadBtn.href = v.arquivo;
+
+  // Changelog
+  changelogList.innerHTML = "";
+  v.changelog.forEach(item=>{
+    const li = document.createElement("li");
+    li.textContent = item;
+    changelogList.appendChild(li);
+  });
+
+  // Receitas
+  recipesList.innerHTML = "";
+  v.receitas.forEach(item=>{
+    const li = document.createElement("li");
+    li.textContent = item;
+    recipesList.appendChild(li);
+  });
+}
+
+// Evento ao mudar versão
+select.addEventListener("change",()=>updateVersion(select.value));
+
+// Inicializa com a primeira (mais recente)
+updateVersion(0);
+</script>
 </body>
 </html>
