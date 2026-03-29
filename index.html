@@ -28,6 +28,12 @@
   --green:     #50d464;
   --greend:    #1a3e22;
   --greena:    rgba(80,212,100,.12);
+  --blue:      #60aaff;
+  --bluea:     rgba(96,170,255,.12);
+  --blued:     #1a3060;
+  --purple:    #c07aff;
+  --purplea:   rgba(192,122,255,.12);
+  --purpled:   #3a1a60;
   --txt:       #c8d8ea;
   --txtd:      #47596e;
   --txtm:      #7080a0;
@@ -212,14 +218,86 @@ h2 {
   color: var(--txtm); font-size: .72rem; padding: .22rem .65rem;
   border-radius: 5px; font-weight: 600; letter-spacing: .04em;
 }
-.tag.green { border-color: var(--greend); color: var(--green); background: var(--greena); }
-.tag.gold  { border-color: var(--goldd);  color: var(--gold);  background: var(--golda); }
-.tag.ember { border-color: rgba(255,122,48,.4); color: #ff9e60; background: var(--embera); }
+.tag.green  { border-color: var(--greend); color: var(--green); background: var(--greena); }
+.tag.gold   { border-color: var(--goldd);  color: var(--gold);  background: var(--golda); }
+.tag.ember  { border-color: rgba(255,122,48,.4); color: #ff9e60; background: var(--embera); }
+.tag.blue   { border-color: var(--blued);  color: var(--blue);  background: var(--bluea); }
+.tag.purple { border-color: var(--purpled); color: var(--purple); background: var(--purplea); }
 
-/* ══ DOWNLOAD ══ */
-.dl-header-row {
+/* ══ FILTROS DE DOWNLOAD ══ */
+.filter-section {
+  margin-bottom: 2.2rem;
+}
+
+.filter-row {
+  display: flex; align-items: flex-start; gap: 2.5rem; flex-wrap: wrap;
+  padding: 1.5rem 1.8rem;
+  background: var(--surf); border: 1px solid var(--bdr);
+  border-radius: var(--rl);
+  position: relative; overflow: hidden;
+}
+.filter-row::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--goldd) 30%, transparent);
+}
+
+.filter-group { display: flex; flex-direction: column; gap: .75rem; }
+.filter-group-label {
+  font-family: 'Cinzel', serif; font-size: .63rem; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--txtd);
+  display: flex; align-items: center; gap: .6rem;
+}
+.filter-group-label::after { content: ''; flex: 1; min-width: 20px; height: 1px; background: var(--bdr); }
+
+.filter-chips { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .42rem 1rem;
+  background: var(--surf2); border: 1px solid var(--bdr2);
+  color: var(--txtm); border-radius: 99px;
+  font-family: 'JetBrains Mono', monospace; font-size: .75rem; font-weight: 600;
+  cursor: pointer; user-select: none;
+  transition: all .2s cubic-bezier(.4,0,.2,1);
+  letter-spacing: .04em;
+}
+.chip:hover { border-color: var(--bdr3); color: var(--txt); }
+
+/* loader chips */
+.chip[data-loader="neoforge"].active {
+  background: rgba(255,154,48,.12); border-color: rgba(255,154,48,.55);
+  color: #ff9e60;
+  box-shadow: 0 0 14px rgba(255,122,48,.2);
+}
+.chip[data-loader="forge"].active {
+  background: rgba(192,122,255,.12); border-color: rgba(192,122,255,.5);
+  color: var(--purple);
+  box-shadow: 0 0 14px rgba(192,122,255,.2);
+}
+.chip[data-loader="fabric"].active {
+  background: rgba(96,170,255,.12); border-color: rgba(96,170,255,.5);
+  color: var(--blue);
+  box-shadow: 0 0 14px rgba(96,170,255,.2);
+}
+
+/* mc version chips */
+.chip[data-mc].active {
+  background: rgba(240,192,64,.12); border-color: rgba(240,192,64,.5);
+  color: var(--gold2);
+  box-shadow: 0 0 14px rgba(240,192,64,.18);
+}
+
+.chip .chip-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: currentColor; opacity: .5;
+  transition: opacity .2s, box-shadow .2s;
+}
+.chip.active .chip-dot { opacity: 1; box-shadow: 0 0 6px currentColor; }
+
+/* resultado do filtro */
+.filter-result-bar {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 1.8rem; flex-wrap: wrap; gap: 1rem;
+  margin-bottom: 1.4rem; flex-wrap: wrap; gap: .8rem;
 }
 .dl-count {
   font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 700;
@@ -227,16 +305,38 @@ h2 {
 }
 .dl-count strong { color: var(--gold2); font-size: 1.1rem; }
 
+.filter-clear {
+  background: none; border: 1px solid var(--bdr2); color: var(--txtd);
+  font-family: 'JetBrains Mono', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .1em; padding: .32rem .85rem; border-radius: 99px;
+  cursor: pointer; transition: all .2s;
+  display: none;
+}
+.filter-clear:hover { border-color: var(--goldd); color: var(--gold); }
+.filter-clear.visible { display: inline-flex; }
+
+.no-results {
+  display: none; text-align: center; padding: 4rem 2rem;
+  color: var(--txtd); font-family: 'Cinzel', serif;
+  font-size: .9rem; letter-spacing: .1em;
+}
+.no-results.visible { display: block; }
+.no-results .nr-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; opacity: .4; }
+
+/* ══ VERSION CARDS ══ */
 .version-list { display: flex; flex-direction: column; gap: .9rem; }
 
 .vcard {
   background: var(--surf); border: 1px solid var(--bdr);
   border-radius: var(--rl); overflow: hidden;
-  transition: border-color .25s, box-shadow .25s;
+  transition: border-color .25s, box-shadow .25s, opacity .3s, transform .3s;
 }
 .vcard.open {
   border-color: var(--goldd);
   box-shadow: 0 0 0 1px rgba(240,192,64,.1), 0 10px 44px rgba(0,0,0,.5);
+}
+.vcard.hidden {
+  display: none;
 }
 
 .vcard-head {
@@ -263,6 +363,23 @@ h2 {
 }
 .vcard.open .vcard-title { color: var(--gold2); }
 
+.vcard-badges { display: flex; gap: .45rem; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+
+/* badge do loader no card */
+.loader-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: .68rem; font-weight: 700;
+  padding: .2rem .65rem; border-radius: 5px; letter-spacing: .04em;
+}
+.loader-badge.neoforge { background: rgba(255,122,48,.14); border: 1px solid rgba(255,122,48,.4); color: #ff9e60; }
+.loader-badge.forge    { background: rgba(192,122,255,.12); border: 1px solid rgba(192,122,255,.38); color: var(--purple); }
+.loader-badge.fabric   { background: rgba(96,170,255,.12);  border: 1px solid rgba(96,170,255,.38);  color: var(--blue); }
+
+.mc-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: .68rem; font-weight: 600;
+  background: rgba(240,192,64,.09); border: 1px solid rgba(240,192,64,.2);
+  color: var(--gold); padding: .2rem .65rem; border-radius: 5px;
+}
+
 .vcard-pill {
   font-family: 'JetBrains Mono', monospace; font-size: .73rem; font-weight: 600;
   background: rgba(240,192,64,.1); border: 1px solid rgba(240,192,64,.22);
@@ -275,7 +392,6 @@ h2 {
 }
 .vcard.open .vcard-chevron { transform: rotate(180deg); color: var(--gold); }
 
-/* expansão suave com grid-template-rows */
 .vcard-body {
   display: grid; grid-template-rows: 0fr;
   transition: grid-template-rows .35s cubic-bezier(.4,0,.2,1);
@@ -310,7 +426,6 @@ h2 {
 .changelog-entry::before { content: '▸'; color: var(--goldd); font-size: .78rem; flex-shrink: 0; margin-top: .06rem; }
 .changelog-entry:hover { border-left-color: var(--gold); color: var(--txt); background: var(--surf3); }
 
-/* coluna do botão de download */
 .vcard-dl-col {
   display: flex; flex-direction: column; align-items: center; gap: .85rem;
   padding: 1rem 1.3rem;
@@ -345,7 +460,7 @@ h2 {
 /* ══ RECEITAS ══ */
 .recipe-topbar {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+  margin-bottom: 1.6rem; flex-wrap: wrap; gap: 1rem;
 }
 .recipe-count {
   font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 700;
@@ -353,10 +468,15 @@ h2 {
 }
 .recipe-count strong { color: var(--gold); font-size: 1.2rem; }
 
+/* filtro de versão nas receitas */
+.recipe-filter-row {
+  display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+}
 .recipe-filter { display: flex; align-items: center; gap: .6rem; }
 .recipe-filter label {
   font-family: 'Cinzel', serif; font-size: .67rem; font-weight: 700;
   letter-spacing: .15em; text-transform: uppercase; color: var(--txtd);
+  white-space: nowrap;
 }
 .recipe-filter select {
   padding: .42rem .95rem; padding-right: 2.2rem;
@@ -366,7 +486,7 @@ h2 {
   cursor: pointer; appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6d84' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right .75rem center;
-  transition: border-color .2s;
+  transition: border-color .2s; min-width: 140px;
 }
 .recipe-filter select:focus { outline: none; border-color: var(--goldd); }
 
@@ -376,7 +496,7 @@ h2 {
   gap: 1.6rem;
 }
 
-/* card de receita */
+/* ══ CARD DE RECEITA ══ */
 .recipe-card {
   position: relative; overflow: hidden;
   background: var(--surf); border: 1px solid var(--bdr);
@@ -408,7 +528,6 @@ h2 {
   flex: 1; line-height: 1.2;
 }
 
-/* ★★★ BADGE SHAPELESS — imagem real, tamanho grande ★★★ */
 .badge-shapeless {
   display: inline-flex; align-items: center; gap: .65rem;
   padding: .5rem 1.1rem .5rem .85rem;
@@ -418,9 +537,8 @@ h2 {
   box-shadow: 0 0 18px rgba(80,212,100,.16), inset 0 1px 0 rgba(80,212,100,.12);
 }
 .badge-shapeless img {
-  width: 30px; height: 30px;        /* GRANDE e nítido */
+  width: 30px; height: 30px;
   image-rendering: pixelated;
-  /* tinta verde igual ao tema */
   filter: brightness(0) saturate(100%)
           invert(68%) sepia(55%) saturate(480%)
           hue-rotate(90deg) brightness(1.18);
@@ -560,6 +678,7 @@ footer strong { color: var(--gold); font-weight: 600; }
   h2 { font-size: 1.9rem; }
   .hero { padding: 4rem 1.2rem 3.5rem; }
   .vcard-body-content { grid-template-columns: 1fr; }
+  .filter-row { gap: 1.5rem; }
 }
 </style>
 </head>
@@ -575,9 +694,9 @@ footer strong { color: var(--gold); font-weight: 600; }
       <div class="hero-badges">
         <span class="hbadge hbadge-gold">
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/><path d="M5 2v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-          NeoForge
+          NeoForge · Forge · Fabric
         </span>
-        <span class="hbadge hbadge-green">✦ 1.21.1</span>
+        <span class="hbadge hbadge-green">✦ 1.21.1 · 1.21.8</span>
         <span class="hbadge hbadge-ember">⚡ Client + Server</span>
       </div>
     </div>
@@ -606,10 +725,11 @@ footer strong { color: var(--gold); font-weight: 600; }
         <span class="info-card-icon">⚙️</span>
         <h3>Compatibilidade</h3>
         <div class="compat-tags">
-          <span class="tag gold">NeoForge</span>
+          <span class="tag ember">NeoForge</span>
+          <span class="tag purple">Forge</span>
+          <span class="tag blue">Fabric</span>
           <span class="tag green">MC 1.21.1</span>
-          <span class="tag ember">Client</span>
-          <span class="tag ember">Server</span>
+          <span class="tag green">MC 1.21.8</span>
         </div>
         <p style="margin-top:.85rem">Funciona em modo solo e em servidores multiplayer sem configuração extra.</p>
       </div>
@@ -634,9 +754,43 @@ footer strong { color: var(--gold); font-weight: 600; }
   <div class="tab-panel" id="tab-download" role="tabpanel">
     <div class="sec-label">Versões Disponíveis</div>
     <h2>Download</h2>
-    <div class="dl-header-row">
-      <div class="dl-count"><strong id="dl-count-num">0</strong> versões disponíveis</div>
+
+    <!-- FILTROS -->
+    <div class="filter-section">
+      <div class="filter-row">
+        <div class="filter-group">
+          <div class="filter-group-label">Mod Loader</div>
+          <div class="filter-chips" id="loader-chips">
+            <button class="chip" data-loader="neoforge">
+              <span class="chip-dot"></span> NeoForge
+            </button>
+            <button class="chip" data-loader="forge">
+              <span class="chip-dot"></span> Forge
+            </button>
+            <button class="chip" data-loader="fabric">
+              <span class="chip-dot"></span> Fabric
+            </button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-group-label">Versão do MC</div>
+          <div class="filter-chips" id="mc-chips">
+            <!-- populado dinamicamente -->
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="filter-result-bar">
+      <div class="dl-count"><strong id="dl-count-num">0</strong> versões encontradas</div>
+      <button class="filter-clear" id="filter-clear-btn">✕ Limpar filtros</button>
+    </div>
+
+    <div class="no-results" id="no-results">
+      <span class="nr-icon">🔍</span>
+      Nenhuma versão encontrada para os filtros selecionados.
+    </div>
+
     <div id="version-list" class="version-list"></div>
   </div>
 
@@ -646,9 +800,15 @@ footer strong { color: var(--gold); font-weight: 600; }
     <h2>Receitas</h2>
     <div class="recipe-topbar">
       <div class="recipe-count"><strong id="recipe-count-num">0</strong> receitas disponíveis</div>
-      <div class="recipe-filter">
-        <label for="recipe-ver-sel">Versão:</label>
-        <select id="recipe-ver-sel"></select>
+      <div class="recipe-filter-row">
+        <div class="recipe-filter">
+          <label for="recipe-loader-sel">Loader:</label>
+          <select id="recipe-loader-sel"></select>
+        </div>
+        <div class="recipe-filter">
+          <label for="recipe-ver-sel">Versão:</label>
+          <select id="recipe-ver-sel"></select>
+        </div>
       </div>
     </div>
     <div id="recipes-grid" class="recipe-grid"></div>
@@ -672,15 +832,16 @@ footer strong { color: var(--gold); font-weight: 600; }
    ║                                                                      ║
    ║  📦 COMO ADICIONAR UMA NOVA VERSÃO                                   ║
    ║  ─────────────────────────────────────────────────────────────────   ║
-   ║  1. Copie o bloco "── MODELO ──" no final da lista VERSOES           ║
-   ║  2. Remova os "//" de cada linha                                     ║
-   ║  3. Preencha nome, tag, arquivo, changelog e receitas                ║
-   ║  4. Salve — o site atualiza sozinho                                  ║
+   ║  1. Copie qualquer bloco existente abaixo                            ║
+   ║  2. Cole dentro do array VERSOES (antes do ]  no final)             ║
+   ║  3. Preencha os campos e salve — o site atualiza sozinho            ║
    ║                                                                      ║
-   ║  CAMPOS DA VERSÃO                                                    ║
-   ║  nome      → texto do card  (ex: "2.0.0 — NeoForge 1.21.4")        ║
-   ║  tag       → rótulo curto   (ex: "v2.0.0")                          ║
-   ║  arquivo   → path do .jar   (ex: "downloads/mod-2.0.0.jar")         ║
+   ║  CAMPOS OBRIGATÓRIOS                                                 ║
+   ║  nome      → texto do card  ex: "2.0.0 — NeoForge 1.21.8"          ║
+   ║  tag       → rótulo curto   ex: "v2.0.0"                            ║
+   ║  loader    → "neoforge" | "forge" | "fabric"  (minúsculas!)         ║
+   ║  mcVersion → versão do MC   ex: "1.21.8"                            ║
+   ║  arquivo   → path do .jar   ex: "downloads/mod-2.0.0.jar"           ║
    ║  changelog → array de strings com as mudanças da versão             ║
    ║  receitas  → array de receitas (veja campos abaixo)                 ║
    ║                                                                      ║
@@ -701,11 +862,13 @@ footer strong { color: var(--gold); font-weight: 600; }
 
 const VERSOES = [
 
-  // ── v1.0.0 ────────────────────────────────────────────────────────────
+  // ── v1.0.0 · NeoForge · 1.21.1 ────────────────────────────────────────
   {
-    nome:    "1.0.0 — NeoForge 1.21.1",
-    tag:     "v1.0.0",
-    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
+    nome:      "1.0.0 — NeoForge 1.21.1",
+    tag:       "v1.0.0",
+    loader:    "neoforge",          // "neoforge" | "forge" | "fabric"
+    mcVersion: "1.21.1",
+    arquivo:   "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
     changelog: [
       "Adicionado BetterGunpowderRecipe",
       "Adicionado BetterRedstoneRecipe",
@@ -751,15 +914,17 @@ const VERSOES = [
     ],
   },
 
-  // ── v1.0.0 ────────────────────────────────────────────────────────────
+  // ── v1.0.0 · NeoForge · 1.21.8 ────────────────────────────────────────
   {
-    nome:    "1.0.0 — NeoForge 1.21.8",
-    tag:     "v1.0.0",
-    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.8.jar",
+    nome:      "1.0.0 — NeoForge 1.21.8",
+    tag:       "v1.0.0",
+    loader:    "neoforge",
+    mcVersion: "1.21.8",
+    arquivo:   "downloads/better_craftings-1.1.0-neoforge-1.21.8.jar",
     changelog: [
-      "Adicionado BetterGunpowderRecipe",
-      "Adicionado BetterRedstoneRecipe",
-      "Adicionado BetterCoalRecipe",
+      "Portado para Minecraft 1.21.8",
+      "Compatibilidade com NeoForge mais recente",
+      "Correções de bugs nas receitas shapeless",
     ],
     receitas: [
       {
@@ -800,6 +965,36 @@ const VERSOES = [
       },
     ],
   },
+
+  // ── MODELO PARA NOVA VERSÃO ────────────────────────────────────────────
+  // Copie este bloco, retire o /* e o */, preencha e salve:
+  /*
+  {
+    nome:      "2.0.0 — Fabric 1.21.8",
+    tag:       "v2.0.0",
+    loader:    "fabric",            // "neoforge" | "forge" | "fabric"
+    mcVersion: "1.21.8",
+    arquivo:   "downloads/better_craftings-2.0.0-fabric-1.21.8.jar",
+    changelog: [
+      "Portado para Fabric",
+      "Adicionado BetterSticksRecipe",
+    ],
+    receitas: [
+      {
+        nome:      "Better Sticks",
+        shapeless: true,
+        grid: [
+          ["OakLog.png", null, null],
+          [null, null, null],
+          [null, null, null],
+        ],
+        resultado:  "Stick.png",
+        quantidade: 8,
+        descricao:  "Converte um Oak Log diretamente em gravetos.",
+      },
+    ],
+  },
+  */
 
 ];
 
@@ -807,7 +1002,7 @@ const VERSOES = [
    LÓGICA INTERNA — não edite abaixo desta linha
 ══════════════════════════════════════════════════════ */
 
-// Faíscas
+// ── Faíscas ──
 (function () {
   const c = document.getElementById('spark-canvas'), ctx = c.getContext('2d');
   let sp = [], W, H;
@@ -832,7 +1027,7 @@ const VERSOES = [
   })();
 })();
 
-// Tabs
+// ── Tabs ──
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b===btn));
@@ -840,7 +1035,80 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-// Célula do grid
+// ── Estado dos filtros de download ──
+const state = { loaders: new Set(), mcVersions: new Set() };
+
+// Coleta todos os loaders e versões únicas existentes nos dados
+function collectMeta() {
+  const loaders = new Set(), mcVersions = new Set();
+  VERSOES.forEach(v => { loaders.add(v.loader); mcVersions.add(v.mcVersion); });
+  return { loaders, mcVersions };
+}
+
+// Cria chips de versão MC dinamicamente
+function buildMcChips() {
+  const { mcVersions } = collectMeta();
+  const container = document.getElementById('mc-chips');
+  container.innerHTML = '';
+  [...mcVersions].sort().forEach(mc => {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.dataset.mc = mc;
+    btn.innerHTML = `<span class="chip-dot"></span> ${mc}`;
+    btn.addEventListener('click', () => toggleChip(btn, 'mc', mc));
+    container.appendChild(btn);
+  });
+}
+
+// Toggle de chip
+function toggleChip(btn, type, val) {
+  const set = type === 'loader' ? state.loaders : state.mcVersions;
+  if (btn.classList.contains('active')) {
+    btn.classList.remove('active');
+    set.delete(val);
+  } else {
+    btn.classList.add('active');
+    set.add(val);
+  }
+  applyFilters();
+}
+
+// Filtro principal
+function applyFilters() {
+  const hasLoaderFilter = state.loaders.size > 0;
+  const hasMcFilter     = state.mcVersions.size > 0;
+  const hasAnyFilter    = hasLoaderFilter || hasMcFilter;
+
+  document.getElementById('filter-clear-btn').classList.toggle('visible', hasAnyFilter);
+
+  let visible = 0;
+  document.querySelectorAll('.vcard').forEach(card => {
+    const loader = card.dataset.loader;
+    const mc     = card.dataset.mc;
+    const loaderOk = !hasLoaderFilter || state.loaders.has(loader);
+    const mcOk     = !hasMcFilter     || state.mcVersions.has(mc);
+    const show = loaderOk && mcOk;
+    card.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+
+  document.getElementById('dl-count-num').textContent = visible;
+  document.getElementById('no-results').classList.toggle('visible', visible === 0);
+}
+
+// Limpar filtros
+document.getElementById('filter-clear-btn').addEventListener('click', () => {
+  state.loaders.clear(); state.mcVersions.clear();
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  applyFilters();
+});
+
+// Loader chips
+document.querySelectorAll('[data-loader]').forEach(btn => {
+  btn.addEventListener('click', () => toggleChip(btn, 'loader', btn.dataset.loader));
+});
+
+// ── Célula do grid ──
 let animOff = 0;
 function buildCell(item) {
   const cell = document.createElement('div');
@@ -869,24 +1137,19 @@ function buildCell(item) {
   return cell;
 }
 
-// Card de receita
+// ── Card de receita ──
 function buildRecipeCard(r) {
   const card=document.createElement('div'); card.className='recipe-card';
-
   const head=document.createElement('div'); head.className='rc-head';
   const h4=document.createElement('h4'); h4.textContent=r.nome; head.appendChild(h4);
-
   if (r.shapeless) {
     const badge=document.createElement('span'); badge.className='badge-shapeless';
-    // ★ imagem real shapeless_symbol.png — 30×30px, bem visível
     badge.innerHTML='<img src="images/shapeless_symbol.png" alt="shapeless"><span>Shapeless</span>';
     head.appendChild(badge);
   }
   card.appendChild(head);
-
   const body=document.createElement('div'); body.className='rc-body';
   const wrap=document.createElement('div'); wrap.className='craft-wrap';
-
   const grid=document.createElement('div'); grid.className='craft-grid';
   let hasAlt=false;
   for(let row=0;row<3;row++) for(let col=0;col<3;col++){
@@ -895,7 +1158,6 @@ function buildRecipeCard(r) {
     grid.appendChild(buildCell(item));
   }
   wrap.appendChild(grid);
-
   const id='ag'+Math.random().toString(36).slice(2);
   const arrow=document.createElement('div'); arrow.className='craft-arrow';
   arrow.innerHTML=`<svg width="30" height="30" viewBox="0 0 30 30" fill="none">
@@ -906,14 +1168,12 @@ function buildRecipeCard(r) {
     <path d="M4 15h22M18 8l8 7-8 7" stroke="url(#${id})" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
   </svg><span class="yield">× ${r.quantidade}</span>`;
   wrap.appendChild(arrow);
-
   const res=document.createElement('div'); res.className='result-cell';
   const ri=document.createElement('img'); ri.src='images/'+r.resultado; ri.alt=r.resultado.replace('.png','');
   const rq=document.createElement('span'); rq.className='result-qty'; rq.textContent=r.quantidade+'×';
   res.appendChild(ri); res.appendChild(rq);
   wrap.appendChild(res);
   body.appendChild(wrap);
-
   if(hasAlt){
     const leg=document.createElement('div'); leg.className='alt-legend';
     leg.innerHTML='<span class="alt-dot"></span> Células <strong>ALT</strong> aceitam ingredientes alternativos';
@@ -927,31 +1187,38 @@ function buildRecipeCard(r) {
   return card;
 }
 
-// Aba Download
-const listEl     = document.getElementById('version-list');
-const dlCountEl  = document.getElementById('dl-count-num');
-const recSelEl   = document.getElementById('recipe-ver-sel');
-const recGridEl  = document.getElementById('recipes-grid');
-const recCountEl = document.getElementById('recipe-count-num');
+// ── Aba Download ──
+const listEl       = document.getElementById('version-list');
+const recLoaderSel = document.getElementById('recipe-loader-sel');
+const recSelEl     = document.getElementById('recipe-ver-sel');
+const recGridEl    = document.getElementById('recipes-grid');
+const recCountEl   = document.getElementById('recipe-count-num');
+
+function loaderLabel(loader) {
+  return { neoforge: 'NeoForge', forge: 'Forge', fabric: 'Fabric' }[loader] || loader;
+}
 
 function buildDownloadTab() {
-  listEl.innerHTML=''; recSelEl.innerHTML='';
-  dlCountEl.textContent=VERSOES.length;
+  listEl.innerHTML = '';
+  buildMcChips();
 
-  VERSOES.forEach((v,i)=>{
-    const opt=document.createElement('option');
-    opt.value=i; opt.textContent=v.tag||v.nome; recSelEl.appendChild(opt);
+  VERSOES.forEach((v, i) => {
+    const vcard = document.createElement('div');
+    vcard.className = 'vcard' + (i === 0 ? ' open' : '');
+    vcard.dataset.loader = v.loader;
+    vcard.dataset.mc     = v.mcVersion;
 
-    const vcard=document.createElement('div');
-    vcard.className='vcard'+(i===0?' open':'');
+    const clHTML = v.changelog.map(c=>`<div class="changelog-entry">${c}</div>`).join('');
 
-    const clHTML=v.changelog.map(c=>`<div class="changelog-entry">${c}</div>`).join('');
-
-    vcard.innerHTML=`
+    vcard.innerHTML = `
       <div class="vcard-head">
         <span class="vcard-indicator"></span>
         <span class="vcard-title">${v.nome}</span>
-        <span class="vcard-pill">${v.tag}</span>
+        <div class="vcard-badges">
+          <span class="loader-badge ${v.loader}">${loaderLabel(v.loader)}</span>
+          <span class="mc-badge">MC ${v.mcVersion}</span>
+          <span class="vcard-pill">${v.tag}</span>
+        </div>
         <svg class="vcard-chevron" width="18" height="18" viewBox="0 0 18 18" fill="none">
           <path d="M4.5 7l4.5 4.5L13.5 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -971,32 +1238,71 @@ function buildDownloadTab() {
                 </svg>
                 Baixar .jar
               </a>
-              <span class="vcard-dl-meta">${v.tag}<br>NeoForge</span>
+              <span class="vcard-dl-meta">${v.tag}<br>${loaderLabel(v.loader)} · MC ${v.mcVersion}</span>
             </div>
           </div>
         </div>
       </div>`;
 
-    vcard.querySelector('.vcard-head').addEventListener('click',()=>{
-      const was=vcard.classList.contains('open');
-      document.querySelectorAll('.vcard').forEach(c=>c.classList.remove('open'));
-      if(!was) vcard.classList.add('open');
+    vcard.querySelector('.vcard-head').addEventListener('click', () => {
+      const was = vcard.classList.contains('open');
+      document.querySelectorAll('.vcard').forEach(c => c.classList.remove('open'));
+      if (!was) vcard.classList.add('open');
     });
+
     listEl.appendChild(vcard);
   });
+
+  // contagem inicial
+  document.getElementById('dl-count-num').textContent = VERSOES.length;
+}
+
+// ── Selects de receitas ──
+function buildRecipeSelects() {
+  // agrupa versões por loader
+  const loaderMap = {}; // { neoforge: [{nome, tag, idx}...], ... }
+  VERSOES.forEach((v, i) => {
+    if (!loaderMap[v.loader]) loaderMap[v.loader] = [];
+    loaderMap[v.loader].push({ nome: v.nome, tag: v.tag, mc: v.mcVersion, idx: i });
+  });
+
+  recLoaderSel.innerHTML = '';
+  Object.keys(loaderMap).forEach(loader => {
+    const opt = document.createElement('option');
+    opt.value = loader;
+    opt.textContent = loaderLabel(loader);
+    recLoaderSel.appendChild(opt);
+  });
+
+  function populateVersions(loader) {
+    recSelEl.innerHTML = '';
+    (loaderMap[loader] || []).forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.idx;
+      opt.textContent = `${v.tag} · MC ${v.mc}`;
+      recSelEl.appendChild(opt);
+    });
+    if (recSelEl.options.length) renderRecipes(Number(recSelEl.value));
+  }
+
+  recLoaderSel.addEventListener('change', () => populateVersions(recLoaderSel.value));
+  recSelEl.addEventListener('change', () => renderRecipes(Number(recSelEl.value)));
+
+  // inicia
+  if (recLoaderSel.options.length) populateVersions(recLoaderSel.value);
 }
 
 function renderRecipes(idx) {
-  animOff=0;
-  const v=VERSOES[idx];
-  recCountEl.textContent=v.receitas.length;
-  recGridEl.innerHTML='';
-  v.receitas.forEach(r=>recGridEl.appendChild(buildRecipeCard(r)));
+  animOff = 0;
+  const v = VERSOES[idx];
+  recCountEl.textContent = v.receitas.length;
+  recGridEl.innerHTML = '';
+  v.receitas.forEach(r => recGridEl.appendChild(buildRecipeCard(r)));
 }
 
-recSelEl.addEventListener('change',()=>renderRecipes(Number(recSelEl.value)));
+// ── Init ──
 buildDownloadTab();
-renderRecipes(0);
+buildRecipeSelects();
 </script>
 </body>
 </html>
