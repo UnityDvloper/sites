@@ -5,100 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Better Craftings Mod</title>
 <style>
-  body { font-family:'Segoe UI', sans-serif; margin:0; padding:0; background:#121212; color:#fff; }
-  header { background:#1f1f1f; padding:2rem; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.3);}
-  header h1 { margin:0; font-size:2.5rem; color:#ffb74d; }
+body { font-family:'Segoe UI', sans-serif; margin:0; padding:0; background:#121212; color:#fff; }
+header { background:#1f1f1f; padding:2rem; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.3);}
+header h1 { margin:0; font-size:2.5rem; color:#ffb74d; }
+main { max-width:1000px; margin:2rem auto; padding:0 1rem;}
+section { margin-bottom:3rem; }
+h2 { color:#ffb74d; margin-bottom:1rem; }
+p { line-height:1.6; }
+select { padding:0.5rem; font-size:1rem; margin-right:1rem; }
+.btn { text-decoration:none; padding:0.6rem 1.2rem; background:#ffb74d; color:black; border-radius:5px; font-weight:bold; font-size:1rem; }
+.btn:hover { background:#ffa726; }
+.yellow-text { color:#ffeb3b; font-weight:bold; }
 
-  main { max-width:1000px; margin:2rem auto; padding:0 1rem;}
-  section { margin-bottom:3rem; }
-  h2 { color:#ffb74d; margin-bottom:1rem; }
-  p { line-height:1.6; }
+.recipe-card { background:#1f1f1f; padding:1rem; border-radius:8px; margin-bottom:1rem; box-shadow:0 2px 5px rgba(0,0,0,0.5);}
+.recipe-card h4 { margin:0 0 0.5rem 0; color:#ffb74d; }
 
-  select { padding:0.5rem; font-size:1rem; margin-right:1rem; }
-  .btn { text-decoration:none; padding:0.6rem 1.2rem; background:#ffb74d; color:black; border-radius:5px; font-weight:bold; font-size:1rem; }
-  .btn:hover { background:#ffa726; }
-  .yellow-text { color:#ffeb3b; font-weight:bold; }
+/* Crafting grid estilo Minecraft */
+.crafting-grid { display:grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(3, 60px); gap:3px; margin-bottom:0.5rem; background:#2a2a2a; padding:5px; border-radius:5px;}
+.crafting-cell { width:60px; height:60px; background:#3a3a3a; border:1px solid #555; border-radius:3px; display:flex; align-items:center; justify-content:center;}
+.crafting-cell img { max-width:48px; max-height:48px; }
+.resultado { display:flex; align-items:center; margin-top:0.5rem; gap:10px; }
+.resultado img { max-width:48px; max-height:48px; }
 
-  .recipe-card {
-    background:#1f1f1f;
-    padding:1rem;
-    border-radius:8px;
-    margin-bottom:1rem;
-    box-shadow:0 2px 5px rgba(0,0,0,0.5);
-  }
-  .recipe-card h4 { margin:0 0 0.5rem 0; color:#ffb74d; }
-
-  /* Crafting grid estilo Minecraft */
-  .crafting-grid {
-    display:grid;
-    grid-template-columns: repeat(3, 60px);
-    grid-template-rows: repeat(3, 60px);
-    gap:3px;
-    margin-bottom:0.5rem;
-    background:#2a2a2a;
-    padding:5px;
-    border-radius:5px;
-  }
-  .crafting-cell {
-    width:60px;
-    height:60px;
-    background:#3a3a3a;
-    border:1px solid #555;
-    border-radius:3px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .crafting-cell img {
-    max-width:48px;
-    max-height:48px;
-  }
-
-  .resultado {
-    display:flex;
-    align-items:center;
-    margin-top:0.5rem;
-    gap:10px;
-  }
-  .resultado img {
-    max-width:48px;
-    max-height:48px;
-  }
-
-  footer { text-align:center; padding:1.5rem 0; background:#1f1f1f; margin-top:2rem; }
+footer { text-align:center; padding:1.5rem 0; background:#1f1f1f; margin-top:2rem; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Better Craftings Mod</h1>
+<h1>Better Craftings Mod</h1>
 </header>
 
 <main>
-  <section class="sobre">
-    <h2>Sobre o Mod</h2>
-    <p>O <strong>Better Craftings</strong> é um mod para Minecraft que melhora o sistema de crafting, adicionando novas receitas e funcionalidades. Compatível com Neoforge e versões recentes do Minecraft!</p>
-  </section>
+<section class="sobre">
+<h2>Sobre o Mod</h2>
+<p>O <strong>Better Craftings</strong> é um mod para Minecraft que melhora o sistema de crafting, adicionando novas receitas e funcionalidades. Compatível com Neoforge e versões recentes do Minecraft!</p>
+</section>
 
-  <section class="downloads">
-    <h2 class="yellow-text">Baixe o Better Crafting</h2>
-    <select id="versoes"></select>
-    <a id="downloadBtn" href="#" download class="btn">Baixar</a>
+<section class="downloads">
+<h2 class="yellow-text">Baixe o Better Crafting</h2>
+<select id="versoes"></select>
+<a id="downloadBtn" href="#" download class="btn">Baixar</a>
 
-    <div id="changelog" style="margin-top:1rem;">
-      <h3>Changelog</h3>
-      <ul id="changelog-list"></ul>
-    </div>
+<div id="changelog" style="margin-top:1rem;">
+<h3>Changelog</h3>
+<ul id="changelog-list"></ul>
+</div>
 
-    <div id="recipes" style="margin-top:1rem;">
-      <h3>Receitas desta versão</h3>
-      <div id="recipes-cards"></div>
-    </div>
-  </section>
+<div id="recipes" style="margin-top:1rem;">
+<h3>Receitas desta versão</h3>
+<div id="recipes-cards"></div>
+</div>
+</section>
 </main>
 
 <footer>
-  <p>&copy; 2026 Better Craftings Mod</p>
+<p>&copy; 2026 Better Craftings Mod</p>
 </footer>
 
 <script>
@@ -120,8 +82,9 @@ const todasVersoes = [
           ["Charcoal.png","",""],
           ["","",""]
         ],
-        resultado: "Gunpowder.png",
-        descricao: "Pode usar carvão vegetal também. 🔹 indica sem formação de receita."
+        resultado:"Gunpowder.png",
+        quantidade:2,
+        descricao:"Pode usar carvão vegetal também. 🔹 indica sem formação de receita."
       },
       {
         nome:"Better Redstone Recipe 🔹",
@@ -131,6 +94,7 @@ const todasVersoes = [
           ["","",""]
         ],
         resultado:"redstone_dust.png",
+        quantidade:2,
         descricao:"Carvão vegetal também funciona. 🔹 indica sem formação de receita."
       },
       {
@@ -141,6 +105,7 @@ const todasVersoes = [
           ["","",""]
         ],
         resultado:"Coal.png",
+        quantidade:1,
         descricao:"Sem formação da receita 🔹."
       }
     ]
@@ -162,14 +127,14 @@ function criarCardReceita(r){
   h4.textContent=r.nome;
   card.appendChild(h4);
 
-  // Crafting grid 3x3 com imagens
+  // Crafting grid 3x3
   r.grid.forEach(row=>{
     const gridDiv = document.createElement("div");
     gridDiv.className="crafting-grid";
     row.forEach(celula=>{
       const div=document.createElement("div");
       div.className="crafting-cell";
-      if(celula){ // se tiver imagem
+      if(celula){
         const img=document.createElement("img");
         img.src="images/"+celula;
         div.appendChild(img);
@@ -179,20 +144,20 @@ function criarCardReceita(r){
     card.appendChild(gridDiv);
   });
 
-  // Resultado
+  // Resultado com quantidade
   const resDiv = document.createElement("div");
   resDiv.className="resultado";
-  const imgRes=document.createElement("img");
+  const imgRes = document.createElement("img");
   imgRes.src="images/"+r.resultado;
-  const spanRes=document.createElement("span");
-  spanRes.textContent="Resultado";
+  const spanRes = document.createElement("span");
+  spanRes.textContent = r.quantidade + "x"; // mostra a quantidade
   resDiv.appendChild(imgRes);
   resDiv.appendChild(spanRes);
   card.appendChild(resDiv);
 
   // Descrição
-  const desc=document.createElement("p");
-  desc.textContent=r.descricao;
+  const desc = document.createElement("p");
+  desc.textContent = r.descricao;
   card.appendChild(desc);
 
   return card;
@@ -229,7 +194,7 @@ todasVersoes.forEach((v,i)=>{
 // Evento ao mudar versão
 select.addEventListener("change",()=>updateVersion(select.value));
 
-// Inicializa com a versão mais recente
+// Inicializa
 updateVersion(0);
 </script>
 
