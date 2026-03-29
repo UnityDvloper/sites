@@ -773,7 +773,7 @@ const VERSOES = [
   {
     nome: "1.0.0 — NeoForge 1.21.1",
     tag: "v1.0.0",
-    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
+    arquivo: "downloads/better_craftings-0.0.1-neoforge-1.21.1.jar",
     changelog: [
       "🔹 Adicionado BetterGunpowderRecipe",
       "🔹 Adicionado BetterRedstoneRecipe",
@@ -815,6 +815,41 @@ const VERSOES = [
         resultado: "Coal.png",
         quantidade: 1,
         descricao: "Converte Charcoal em Coal. Ingrediente em qualquer posição."
+      }
+    ]
+  },
+   {
+    nome: "0.0.1 — NeoForge 1.21.1",
+    tag: "v0.0.1",
+    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
+    changelog: [
+      "🔹 Adicionado BetterGunpowderRecipe",
+      "🔹 Adicionado BetterRedstoneRecipe"
+    ],
+    receitas: [
+      {
+        nome: "Better Gunpowder",
+        shapeless: true,
+        grid: [
+          [{ primary: "Coal.png", alt: "Charcoal.png" }, "redstone_dust.png", null],
+          [null, null, null],
+          [null, null, null]
+        ],
+        resultado: "Gunpowder.png",
+        quantidade: 2,
+        descricao: "Usa Coal ou Charcoal + Redstone Dust. Ingredientes em qualquer posição."
+      },
+      {
+        nome: "Better Redstone",
+        shapeless: true,
+        grid: [
+          [{ primary: "Coal.png", alt: "Charcoal.png" }, "Iron_ingot.png", null],
+          [null, null, null],
+          [null, null, null]
+        ],
+        resultado: "redstone_dust.png",
+        quantidade: 2,
+        descricao: "Usa Coal ou Charcoal + Iron Ingot. Ingredientes em qualquer posição."
       }
     ]
   }
