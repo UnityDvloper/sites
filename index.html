@@ -5,23 +5,71 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Better Craftings Mod</title>
 <style>
-  body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background:#121212; color:#fff; }
-  header { background:#1f1f1f; padding:2rem; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.3); }
+  body { font-family:'Segoe UI', sans-serif; margin:0; padding:0; background:#121212; color:#fff; }
+  header { background:#1f1f1f; padding:2rem; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.3);}
   header h1 { margin:0; font-size:2.5rem; color:#ffb74d; }
-  main { max-width:900px; margin:2rem auto; padding:0 1rem; }
+
+  main { max-width:1000px; margin:2rem auto; padding:0 1rem;}
   section { margin-bottom:3rem; }
   h2 { color:#ffb74d; margin-bottom:1rem; }
   p { line-height:1.6; }
+
   select { padding:0.5rem; font-size:1rem; margin-right:1rem; }
   .btn { text-decoration:none; padding:0.6rem 1.2rem; background:#ffb74d; color:black; border-radius:5px; font-weight:bold; font-size:1rem; }
   .btn:hover { background:#ffa726; }
   .yellow-text { color:#ffeb3b; font-weight:bold; }
-  .changelog, .recipes { background:#1f1f1f; padding:1rem; border-radius:5px; margin-top:1rem; }
-  .recipe-item { margin-bottom:0.5rem; }
+
+  .recipe-card {
+    background:#1f1f1f;
+    padding:1rem;
+    border-radius:8px;
+    margin-bottom:1rem;
+    box-shadow:0 2px 5px rgba(0,0,0,0.5);
+  }
+  .recipe-card h4 { margin:0 0 0.5rem 0; color:#ffb74d; }
+
+  /* Crafting grid estilo Minecraft */
+  .crafting-grid {
+    display:grid;
+    grid-template-columns: repeat(3, 60px);
+    grid-template-rows: repeat(3, 60px);
+    gap:3px;
+    margin-bottom:0.5rem;
+    background:#2a2a2a;
+    padding:5px;
+    border-radius:5px;
+  }
+  .crafting-cell {
+    width:60px;
+    height:60px;
+    background:#3a3a3a;
+    border:1px solid #555;
+    border-radius:3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .crafting-cell img {
+    max-width:48px;
+    max-height:48px;
+  }
+
+  .resultado {
+    display:flex;
+    align-items:center;
+    margin-top:0.5rem;
+    gap:10px;
+  }
+  .resultado img {
+    max-width:48px;
+    max-height:48px;
+  }
+
   footer { text-align:center; padding:1.5rem 0; background:#1f1f1f; margin-top:2rem; }
 </style>
 </head>
 <body>
+
 <header>
   <h1>Better Craftings Mod</h1>
 </header>
@@ -37,14 +85,14 @@
     <select id="versoes"></select>
     <a id="downloadBtn" href="#" download class="btn">Baixar</a>
 
-    <div id="changelog" class="changelog">
+    <div id="changelog" style="margin-top:1rem;">
       <h3>Changelog</h3>
       <ul id="changelog-list"></ul>
     </div>
 
-    <div id="recipes" class="recipes">
+    <div id="recipes" style="margin-top:1rem;">
       <h3>Receitas desta versão</h3>
-      <ul id="recipes-list"></ul>
+      <div id="recipes-cards"></div>
     </div>
   </section>
 </main>
@@ -54,80 +102,136 @@
 </footer>
 
 <script>
-// --- Cada versão é um bloco fácil de adicionar ---
+// ======= CONFIGURAÇÃO DA VERSÃO =======
 const todasVersoes = [
   {
-    nome: "better_craftings-1.0.0-neoforge-1.21.1 (mais recente)",
-    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
-    changelog: [
-      "Adicionado BetterGunpowderRecipe",
-      "Adicionado BetterRedstoneRecipe",
-      "Adicionado BetterCoalRecipe"
+    nome:"better_craftings-1.0.0-neoforge-1.21.1 (mais recente)",
+    arquivo:"downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
+    changelog:[
+      "Adicionado BetterGunpowderRecipe 🔹",
+      "Adicionado BetterRedstoneRecipe 🔹",
+      "Adicionado BetterCoalRecipe 🔹"
     ],
-    receitas: [
-      "Better Gunpowder Recipe: 1 carvão + 1 redstone → 2 pólvoras (carvão vegetal também funciona, sem formação da receita)",
-      "Better Redstone Recipe: 1 carvão + 1 ferro → 2 redstones (carvão vegetal também funciona, sem formação da receita)",
-      "Better Coal Recipe: 1 charcoal → 1 carvão (sem formação da receita)"
-    ]
-  },
-  // 👇 Para adicionar novas versões, só copie esse bloco e mude os valores
-  /*
-  {
-    nome: "better_craftings-1.1.0-neoforge-1.21.1",
-    arquivo: "downloads/better_craftings-1.1.0-neoforge-1.21.1.jar",
-    changelog: [
-      "Corrigido bug X",
-      "Nova receita Y"
-    ],
-    receitas: [
-      "Nova Receita 1",
-      "Nova Receita 2"
+    receitas:[
+      {
+        nome:"Better Gunpowder Recipe 🔹",
+        grid:[
+          ["Coal.png","redstone_dust.png",""],
+          ["Charcoal.png","",""],
+          ["","",""]
+        ],
+        resultado: "Gunpowder.png",
+        descricao: "Pode usar carvão vegetal também. 🔹 indica sem formação de receita."
+      },
+      {
+        nome:"Better Redstone Recipe 🔹",
+        grid:[
+          ["Coal.png","Iron_ingot.png",""],
+          ["Charcoal.png","",""],
+          ["","",""]
+        ],
+        resultado:"redstone_dust.png",
+        descricao:"Carvão vegetal também funciona. 🔹 indica sem formação de receita."
+      },
+      {
+        nome:"Better Coal Recipe 🔹",
+        grid:[
+          ["Charcoal.png","",""],
+          ["","",""],
+          ["","",""]
+        ],
+        resultado:"Coal.png",
+        descricao:"Sem formação da receita 🔹."
+      }
     ]
   }
-  */
 ];
 
-// Elementos do DOM
+// ======= DOM ELEMENTS =======
 const select = document.getElementById("versoes");
 const downloadBtn = document.getElementById("downloadBtn");
 const changelogList = document.getElementById("changelog-list");
-const recipesList = document.getElementById("recipes-list");
+const recipesCards = document.getElementById("recipes-cards");
 
-// Preenche dropdown
-todasVersoes.forEach((v,i)=>{
-  const opt = document.createElement("option");
-  opt.value = i;
-  opt.textContent = v.nome;
-  select.appendChild(opt);
-});
+// ======= FUNÇÕES =======
+function criarCardReceita(r){
+  const card = document.createElement("div");
+  card.className="recipe-card";
 
-// Função para atualizar changelog e receitas
+  const h4 = document.createElement("h4");
+  h4.textContent=r.nome;
+  card.appendChild(h4);
+
+  // Crafting grid 3x3 com imagens
+  r.grid.forEach(row=>{
+    const gridDiv = document.createElement("div");
+    gridDiv.className="crafting-grid";
+    row.forEach(celula=>{
+      const div=document.createElement("div");
+      div.className="crafting-cell";
+      if(celula){ // se tiver imagem
+        const img=document.createElement("img");
+        img.src="images/"+celula;
+        div.appendChild(img);
+      }
+      gridDiv.appendChild(div);
+    });
+    card.appendChild(gridDiv);
+  });
+
+  // Resultado
+  const resDiv = document.createElement("div");
+  resDiv.className="resultado";
+  const imgRes=document.createElement("img");
+  imgRes.src="images/"+r.resultado;
+  const spanRes=document.createElement("span");
+  spanRes.textContent="Resultado";
+  resDiv.appendChild(imgRes);
+  resDiv.appendChild(spanRes);
+  card.appendChild(resDiv);
+
+  // Descrição
+  const desc=document.createElement("p");
+  desc.textContent=r.descricao;
+  card.appendChild(desc);
+
+  return card;
+}
+
 function updateVersion(i){
   const v = todasVersoes[i];
-  downloadBtn.href = v.arquivo;
+  downloadBtn.href=v.arquivo;
 
   // Changelog
-  changelogList.innerHTML = "";
+  changelogList.innerHTML="";
   v.changelog.forEach(item=>{
-    const li = document.createElement("li");
-    li.textContent = item;
+    const li=document.createElement("li");
+    li.textContent=item;
     changelogList.appendChild(li);
   });
 
   // Receitas
-  recipesList.innerHTML = "";
-  v.receitas.forEach(item=>{
-    const li = document.createElement("li");
-    li.textContent = item;
-    recipesList.appendChild(li);
+  recipesCards.innerHTML="";
+  v.receitas.forEach(r=>{
+    const card = criarCardReceita(r);
+    recipesCards.appendChild(card);
   });
 }
+
+// Preenche dropdown
+todasVersoes.forEach((v,i)=>{
+  const opt=document.createElement("option");
+  opt.value=i;
+  opt.textContent=v.nome;
+  select.appendChild(opt);
+});
 
 // Evento ao mudar versão
 select.addEventListener("change",()=>updateVersion(select.value));
 
-// Inicializa com a primeira (mais recente)
+// Inicializa com a versão mais recente
 updateVersion(0);
 </script>
+
 </body>
 </html>
