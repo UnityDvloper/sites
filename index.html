@@ -751,32 +751,55 @@ const VERSOES = [
     ],
   },
 
-  // ── MODELO PARA NOVA VERSÃO ────────────────────────────────────────────
-  // Copie este bloco, retire os "//" e preencha:
-  //
-  // {
-  //   nome:    "2.0.0 — NeoForge 1.21.4",
-  //   tag:     "v2.0.0",
-  //   arquivo: "downloads/better_craftings-2.0.0-neoforge-1.21.4.jar",
-  //   changelog: [
-  //     "Adicionado BetterSticksRecipe",
-  //     "Corrigido bug nas receitas shapeless",
-  //   ],
-  //   receitas: [
-  //     {
-  //       nome:      "Better Sticks",
-  //       shapeless: true,
-  //       grid: [
-  //         ["OakLog.png", null, null],
-  //         [null, null, null],
-  //         [null, null, null],
-  //       ],
-  //       resultado:  "Stick.png",
-  //       quantidade: 8,
-  //       descricao:  "Converte um Oak Log diretamente em gravetos.",
-  //     },
-  //   ],
-  // },
+  // ── v1.0.0 ────────────────────────────────────────────────────────────
+  {
+    nome:    "1.0.0 — NeoForge 1.21.8",
+    tag:     "v1.0.0",
+    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.8.jar",
+    changelog: [
+      "Adicionado BetterGunpowderRecipe",
+      "Adicionado BetterRedstoneRecipe",
+      "Adicionado BetterCoalRecipe",
+    ],
+    receitas: [
+      {
+        nome:      "Better Gunpowder",
+        shapeless: true,
+        grid: [
+          [{ primary: "Coal.png", alt: "Charcoal.png" }, "redstone_dust.png", null],
+          [null, null, null],
+          [null, null, null],
+        ],
+        resultado:  "Gunpowder.png",
+        quantidade: 2,
+        descricao:  "Usa Coal ou Charcoal + Redstone Dust. Ingredientes em qualquer posição.",
+      },
+      {
+        nome:      "Better Redstone",
+        shapeless: true,
+        grid: [
+          [{ primary: "Coal.png", alt: "Charcoal.png" }, "Iron_ingot.png", null],
+          [null, null, null],
+          [null, null, null],
+        ],
+        resultado:  "redstone_dust.png",
+        quantidade: 2,
+        descricao:  "Usa Coal ou Charcoal + Iron Ingot. Ingredientes em qualquer posição.",
+      },
+      {
+        nome:      "Better Coal",
+        shapeless: true,
+        grid: [
+          ["Charcoal.png", null, null],
+          [null, null, null],
+          [null, null, null],
+        ],
+        resultado:  "Coal.png",
+        quantidade: 1,
+        descricao:  "Converte Charcoal em Coal. Ingrediente em qualquer posição.",
+      },
+    ],
+  },
 
 ];
 
