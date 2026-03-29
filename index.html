@@ -1,1 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Better Craftings Mod</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #121212;
+      color: #fff;
+    }
 
+    header {
+      background: #1f1f1f;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #ffb74d;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    section {
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      color: #ffb74d;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      line-height: 1.6;
+    }
+
+    select {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-right: 1rem;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      background: #ffb74d;
+      color: white;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #ffa726;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem 0;
+      background: #1f1f1f;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Better Craftings Mod</h1>
+  </header>
+
+  <main>
+    <section class="sobre">
+      <h2>Sobre o Mod</h2>
+      <p>O <strong>Better Craftings</strong> é um mod para Minecraft que melhora o sistema de crafting, adicionando novas receitas e funcionalidades, compatível com Neoforge e versões recentes do Minecraft. Fácil de instalar e pronto para expandir sua experiência de jogo!</p>
+    </section>
+
+    <section class="downloads">
+      <h2>Baixe a versão mais recente</h2>
+      <select id="versoes"></select>
+      <a id="downloadBtn" href="#" download class="btn">Baixar</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Better Craftings Mod</p>
+  </footer>
+
+  <script>
+    // Lista de versões do mod (adicione novas facilmente)
+    const versoes = [
+      { nome: "better_craftings-1.0.0-neoforge-1.21.1 (mais recente)", arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar" },
+    ];
+
+    const select = document.getElementById("versoes");
+    const downloadBtn = document.getElementById("downloadBtn");
+
+    // Preenche o dropdown
+    versoes.forEach((versao, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = versao.nome;
+      select.appendChild(option);
+    });
+
+    // Atualiza o link de download quando muda a versão
+    select.addEventListener("change", () => {
+      const index = select.value;
+      downloadBtn.href = versoes[index].arquivo;
+    });
+
+    // Define o mais recente como padrão
+    select.value = 0;
+    downloadBtn.href = versoes[0].arquivo;
+  </script>
+</body>
+</html>
