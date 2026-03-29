@@ -5,124 +5,355 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Better Craftings Mod</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Permanent+Marker&family=Rubik:wght@300;400;500;700&family=VT323&display=swap" rel="stylesheet">
 <style>
-/* ===========================
-   CSS VARIABLES — edite aqui para mudar o tema
-   =========================== */
-:root {
-  --bg:          #0e0e0e;
-  --surface:     #181818;
-  --surface2:    #222;
-  --border:      #333;
-  --cell-bg:     #2c2c2c;
-  --cell-border: #555;
-  --accent:      #ffb74d;
-  --accent-hover:#ffa726;
-  --text:        #e0e0e0;
-  --text-dim:    #888;
-  --radius:      8px;
-  --cell-size:   56px;
-  --cell-gap:    4px;
-}
-
+/* ═══════════════════════════════════════════════
+   RESET + CSS VARS
+═══════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --bg:         #0b0d0f;
+  --surface:    #111418;
+  --surface2:   #181c22;
+  --surface3:   #1e2530;
+  --border:     #2a3040;
+  --border2:    #3a4560;
+
+  --gold:       #e8b84b;
+  --gold2:      #f5d080;
+  --gold-dim:   #9a7830;
+  --green:      #5ec46a;
+  --green-dim:  #2a5c30;
+  --red:        #e05050;
+  --blue:       #5090e0;
+
+  --text:       #c8d4e0;
+  --text-dim:   #6a7a8a;
+  --text-mid:   #8a9ab0;
+
+  --cell-size:  58px;
+  --cell-gap:   5px;
+  --radius:     6px;
+  --radius-lg:  12px;
+}
+
+html { scroll-behavior: smooth; }
+
 body {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Rubik', sans-serif;
   font-size: 1rem;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* ===========================
+/* ═══════════════════════════════════════════════
+   PIXEL GRID BACKGROUND (CSS-only)
+═══════════════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(232,184,75,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,184,75,.018) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════
    HEADER
-   =========================== */
+═══════════════════════════════════════════════ */
 header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 2.5rem 1rem;
+  position: relative;
+  background: linear-gradient(180deg, #14181f 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border2);
+  padding: 4rem 1.5rem 3.5rem;
   text-align: center;
+  overflow: hidden;
+  z-index: 1;
 }
+
+/* Vignette glow behind title */
+header::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(232,184,75,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.header-badge {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--green);
+  font-size: .75rem;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: .28rem .8rem;
+  border-radius: 99px;
+  margin-bottom: 1.2rem;
+}
+
 header h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 2.4rem;
-  color: var(--accent);
-  letter-spacing: .05em;
-}
-header p {
-  margin-top: .5rem;
-  color: var(--text-dim);
-  font-size: 1rem;
+  font-family: 'VT323', monospace;
+  font-size: clamp(2.8rem, 7vw, 4.8rem);
+  color: var(--gold);
+  letter-spacing: .04em;
+  line-height: 1.1;
+  text-shadow:
+    0 0 20px rgba(232,184,75,.4),
+    0 0 60px rgba(232,184,75,.15);
+  position: relative;
+  z-index: 1;
 }
 
-/* ===========================
-   LAYOUT
-   =========================== */
-main {
-  max-width: 960px;
-  margin: 2.5rem auto;
-  padding: 0 1.2rem;
+header h1 span {
+  color: var(--gold2);
 }
-section { margin-bottom: 3rem; }
 
-h2 {
-  font-family: 'Cinzel', serif;
-  color: var(--accent);
-  font-size: 1.35rem;
-  margin-bottom: 1rem;
-  padding-bottom: .4rem;
+.header-sub {
+  margin-top: .8rem;
+  color: var(--text-mid);
+  font-size: 1.05rem;
+  font-weight: 300;
+  letter-spacing: .02em;
+}
+
+/* ═══════════════════════════════════════════════
+   NAV TABS
+═══════════════════════════════════════════════ */
+.tabs-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(11,13,15,.92);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+  gap: 0;
 }
-h3 {
-  color: var(--accent);
-  font-size: 1.1rem;
-  margin: 1.5rem 0 .75rem;
-}
-p { line-height: 1.6; color: var(--text-dim); }
 
-/* ===========================
-   DOWNLOAD BAR
-   =========================== */
-.download-bar {
+.tab-btn {
+  background: none;
+  border: none;
+  padding: .85rem 1.5rem;
+  color: var(--text-dim);
+  font-family: 'Rubik', sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+  position: relative;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════════ */
+main {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 2.5rem 1.4rem 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeUp .3s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION HEADINGS
+═══════════════════════════════════════════════ */
+.section-label {
   display: flex;
   align-items: center;
-  gap: .75rem;
+  gap: .7rem;
+  color: var(--text-dim);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+h2 {
+  font-family: 'VT323', monospace;
+  color: var(--gold);
+  font-size: 1.9rem;
+  letter-spacing: .03em;
+  margin-bottom: 1.2rem;
+}
+
+/* ═══════════════════════════════════════════════
+   ABOUT TAB
+═══════════════════════════════════════════════ */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.5rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.info-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 4px 24px rgba(0,0,0,.3);
+}
+
+.info-card-icon {
+  font-size: 1.6rem;
+  margin-bottom: .7rem;
+  display: block;
+}
+.info-card h3 {
+  color: var(--gold2);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: .4rem;
+}
+.info-card p {
+  color: var(--text-mid);
+  font-size: .9rem;
+  line-height: 1.65;
+}
+
+.compat-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .6rem;
+}
+.tag {
+  display: inline-block;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--text-mid);
+  font-size: .75rem;
+  padding: .18rem .55rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.tag.green { border-color: var(--green-dim); color: var(--green); }
+.tag.gold  { border-color: var(--gold-dim);  color: var(--gold); }
+
+/* ═══════════════════════════════════════════════
+   DOWNLOAD TAB
+═══════════════════════════════════════════════ */
+.version-selector {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.version-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
 }
-select {
-  padding: .5rem .75rem;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 1rem;
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
+
+.version-header label {
+  font-size: .8rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+select#versoes {
   flex: 1;
   min-width: 200px;
-}
-select:focus { outline: 2px solid var(--accent); }
-
-.btn {
-  display: inline-block;
-  padding: .55rem 1.3rem;
-  background: var(--accent);
-  color: #000;
+  padding: .5rem .8rem;
+  font-family: 'Rubik', sans-serif;
+  font-size: .95rem;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border2);
   border-radius: var(--radius);
-  font-family: 'Rajdhani', sans-serif;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a7a8a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .75rem center;
+  padding-right: 2.2rem;
+}
+select#versoes:focus { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .55rem 1.4rem;
+  background: var(--gold);
+  color: #0b0d0f;
+  border-radius: var(--radius);
+  font-family: 'Rubik', sans-serif;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: .95rem;
   text-decoration: none;
   white-space: nowrap;
-  transition: background .15s;
+  transition: background .15s, transform .1s, box-shadow .15s;
+  box-shadow: 0 2px 12px rgba(232,184,75,.25);
 }
-.btn:hover { background: var(--accent-hover); }
+.btn-download:hover {
+  background: var(--gold2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(232,184,75,.4);
+}
+.btn-download:active { transform: translateY(0); }
 
-/* ===========================
-   CHANGELOG
-   =========================== */
+/* Changelog */
+.changelog-wrap {
+  padding: 1.4rem 1.5rem;
+}
+.changelog-wrap h3 {
+  font-size: .75rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .9rem;
+}
+
 #changelog-list {
   list-style: none;
   display: flex;
@@ -130,41 +361,93 @@ select:focus { outline: 2px solid var(--accent); }
   gap: .4rem;
 }
 #changelog-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
   background: var(--surface2);
-  border-left: 3px solid var(--accent);
-  padding: .45rem .9rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold-dim);
+  padding: .55rem .9rem;
   border-radius: 0 var(--radius) var(--radius) 0;
-  font-size: .95rem;
+  font-size: .92rem;
+  color: var(--text-mid);
+  transition: border-left-color .15s, color .15s;
+}
+#changelog-list li:hover {
+  border-left-color: var(--gold);
+  color: var(--text);
 }
 
-/* ===========================
-   RECIPE CARDS
-   =========================== */
+/* ═══════════════════════════════════════════════
+   RECIPES TAB
+═══════════════════════════════════════════════ */
+.version-pill-bar {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: 1.8rem;
+  flex-wrap: wrap;
+}
+.version-pill-bar span {
+  font-size: .78rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
 .recipe-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.2rem;
 }
 
 .recipe-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.1rem;
+  border-radius: var(--radius-lg);
+  padding: 1.3rem;
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: .9rem;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+.recipe-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 6px 30px rgba(0,0,0,.35);
+  transform: translateY(-2px);
 }
 
-.recipe-card h4 {
-  font-family: 'Cinzel', serif;
-  font-size: 1rem;
-  color: var(--accent);
+.recipe-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+.recipe-card-title h4 {
+  font-family: 'VT323', monospace;
+  font-size: 1.25rem;
+  color: var(--gold);
+  letter-spacing: .03em;
 }
 
-/* ===========================
-   CRAFTING GRID 3×3
-   =========================== */
+.badge-shapeless {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: rgba(94,196,106,.12);
+  border: 1px solid var(--green-dim);
+  color: var(--green);
+  padding: .15rem .5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   CRAFTING GRID
+═══════════════════════════════════════════════ */
 .crafting-wrapper {
   display: flex;
   align-items: center;
@@ -177,51 +460,56 @@ select:focus { outline: 2px solid var(--accent); }
   grid-template-columns: repeat(3, var(--cell-size));
   grid-template-rows:    repeat(3, var(--cell-size));
   gap: var(--cell-gap);
-  background: var(--surface2);
-  padding: 6px;
-  border: 1px solid var(--border);
+  background: #0e1115;
+  padding: 7px;
+  border: 1px solid var(--border2);
   border-radius: var(--radius);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.5);
   flex-shrink: 0;
 }
 
 .crafting-cell {
   width: var(--cell-size);
   height: var(--cell-size);
-  background: var(--cell-bg);
-  border: 1px solid var(--cell-border);
+  background: #1a1f28;
+  border: 1px solid #2c3545;
   border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+  transition: border-color .15s;
 }
+.crafting-cell:hover { border-color: #4a5a70; }
 
 .crafting-cell.empty {
-  background: linear-gradient(135deg, #2a2a2a 0%, #252525 100%);
+  background: linear-gradient(135deg, #181c24 0%, #151921 100%);
 }
 
 .crafting-cell img {
   width: 40px;
   height: 40px;
   image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.6));
 }
 
-/* ===========================
-   CÉLULA COM ALTERNATIVA ANIMADA
-   Duas imagens empilhadas fazem crossfade entre si.
-   =========================== */
+/* Animação ALT */
 .crafting-cell.has-alt {
-  border-color: #81c78455;
+  border-color: rgba(94,196,106,.3);
+  box-shadow: inset 0 0 0 1px rgba(94,196,106,.08);
+}
+.crafting-cell.has-alt:hover {
+  border-color: rgba(94,196,106,.6);
 }
 
-/* Container que empilha as duas imagens */
 .cell-anim-wrap {
   position: relative;
   width: 40px;
   height: 40px;
 }
-
 .cell-anim-wrap img {
   position: absolute;
   top: 0; left: 0;
@@ -230,33 +518,20 @@ select:focus { outline: 2px solid var(--accent); }
   image-rendering: pixelated;
 }
 
-/*
-  Ciclo (3s total):
-  0–40%  → primary visível, alt invisível
-  45–90% → primary invisível, alt visível
-  95–100%→ volta ao início (crossfade)
-*/
-.cell-anim-wrap .img-primary {
-  animation: fadePrimary 3s ease-in-out infinite;
-  animation-delay: var(--cell-delay, 0s);
-}
-.cell-anim-wrap .img-alt {
-  animation: fadeAlt 3s ease-in-out infinite;
-  animation-delay: var(--cell-delay, 0s);
-}
+.cell-anim-wrap .img-primary { animation: fadePrimary 3.5s ease-in-out infinite; }
+.cell-anim-wrap .img-alt     { animation: fadeAlt     3.5s ease-in-out infinite; }
 
 @keyframes fadePrimary {
-  0%, 35%  { opacity: 1; }
-  45%, 90% { opacity: 0; }
+  0%, 38%  { opacity: 1; }
+  48%, 92% { opacity: 0; }
   100%     { opacity: 1; }
 }
 @keyframes fadeAlt {
-  0%, 35%  { opacity: 0; }
-  45%, 90% { opacity: 1; }
+  0%, 38%  { opacity: 0; }
+  48%, 92% { opacity: 1; }
   100%     { opacity: 0; }
 }
 
-/* Indicador "ALT" no canto da célula */
 .crafting-cell.has-alt::after {
   content: "ALT";
   position: absolute;
@@ -264,26 +539,37 @@ select:focus { outline: 2px solid var(--accent); }
   right: 2px;
   font-size: 7px;
   font-weight: 700;
-  color: #81c784;
+  font-family: 'Rubik', sans-serif;
+  color: var(--green);
   line-height: 1;
   z-index: 2;
-  pointer-events: none;
+  opacity: .8;
 }
 
-/* ===========================
-   SETA E RESULTADO
-   =========================== */
-.arrow {
-  font-size: 1.8rem;
-  color: var(--accent);
+/* Arrow */
+.craft-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .2rem;
   flex-shrink: 0;
 }
+.craft-arrow svg {
+  opacity: .9;
+}
+.craft-arrow .yield-label {
+  font-size: .7rem;
+  color: var(--text-dim);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
 
+/* Result cell */
 .result-cell {
-  width: calc(var(--cell-size) + 8px);
-  height: calc(var(--cell-size) + 8px);
-  background: var(--cell-bg);
-  border: 2px solid var(--accent);
+  width: calc(var(--cell-size) + 12px);
+  height: calc(var(--cell-size) + 12px);
+  background: #0e1115;
+  border: 1.5px solid var(--gold-dim);
   border-radius: var(--radius);
   display: flex;
   flex-direction: column;
@@ -291,113 +577,202 @@ select:focus { outline: 2px solid var(--accent); }
   justify-content: center;
   gap: 3px;
   flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(232,184,75,.12), inset 0 1px 0 rgba(255,255,255,.04);
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+}
+.result-cell:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(232,184,75,.25);
+}
+.result-cell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(232,184,75,.07) 0%, transparent 70%);
 }
 .result-cell img {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   image-rendering: pixelated;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.7));
+  position: relative;
 }
 .result-qty {
   font-weight: 700;
-  font-size: .85rem;
-  color: var(--accent);
+  font-size: .8rem;
+  color: var(--gold);
+  letter-spacing: .05em;
+  position: relative;
 }
 
-/* ===========================
-   LEGENDA ALT
-   =========================== */
+/* ALT legend */
 .alt-legend {
   display: flex;
   align-items: center;
   gap: .45rem;
-  font-size: .8rem;
-  color: #81c784;
+  font-size: .78rem;
+  color: var(--green);
+  background: rgba(94,196,106,.07);
+  border: 1px solid rgba(94,196,106,.18);
+  border-radius: 4px;
+  padding: .3rem .65rem;
 }
-.alt-legend-dot {
-  width: 8px;
-  height: 8px;
+.alt-dot {
+  width: 6px; height: 6px;
   border-radius: 50%;
-  background: #81c784;
+  background: var(--green);
   flex-shrink: 0;
 }
 
 .recipe-desc {
-  font-size: .88rem;
+  font-size: .87rem;
   color: var(--text-dim);
-  line-height: 1.5;
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+  padding-top: .75rem;
 }
 
-/* ===========================
+/* ═══════════════════════════════════════════════
    FOOTER
-   =========================== */
+═══════════════════════════════════════════════ */
 footer {
+  position: relative;
+  z-index: 1;
   text-align: center;
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   background: var(--surface);
   border-top: 1px solid var(--border);
   color: var(--text-dim);
-  font-size: .9rem;
+  font-size: .88rem;
 }
+footer strong { color: var(--gold); font-weight: 500; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .recipe-grid { grid-template-columns: 1fr; }
+  .tab-btn { padding: .75rem .9rem; font-size: .8rem; }
+  header h1 { font-size: 2.4rem; }
+  :root { --cell-size: 50px; }
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>⚒ Better Craftings Mod</h1>
-  <p>Novas receitas e melhorias no sistema de crafting do Minecraft</p>
+  <div class="header-badge">Mod Open Source</div>
+  <h1>⚒ Better <span>Craftings</span></h1>
+  <p class="header-sub">Novas receitas e melhorias no sistema de crafting do Minecraft</p>
 </header>
+
+<!-- NAV TABS -->
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" data-tab="about"   role="tab">Sobre</button>
+  <button class="tab-btn"        data-tab="download" role="tab">Download</button>
+  <button class="tab-btn"        data-tab="recipes"  role="tab">Receitas</button>
+</nav>
 
 <main>
 
-  <section>
+  <!-- ══ SOBRE ══ -->
+  <div class="tab-panel active" id="tab-about" role="tabpanel">
+    <div class="section-label">Visão Geral</div>
     <h2>Sobre o Mod</h2>
-    <p>
-      O <strong style="color:var(--accent)">Better Craftings</strong> é um mod para Minecraft que expande o sistema de
-      crafting com novas receitas úteis. Compatível com <strong>NeoForge</strong> e versões recentes do Minecraft.
-      Receitas marcadas com 🔹 não possuem formato específico (shapeless).
-    </p>
-  </section>
-
-  <section>
-    <h2>Download</h2>
-    <div class="download-bar">
-      <select id="versoes" aria-label="Selecionar versão"></select>
-      <a id="downloadBtn" href="#" class="btn">⬇ Baixar</a>
+    <div class="about-grid">
+      <div class="info-card">
+        <span class="info-card-icon">🧱</span>
+        <h3>O que é?</h3>
+        <p>Better Craftings expande o sistema de crafting vanilla com receitas úteis e intuitivas, reduzindo a dependência de processos demorados de farmar.</p>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">⚙️</span>
+        <h3>Compatibilidade</h3>
+        <div class="compat-tags">
+          <span class="tag gold">NeoForge</span>
+          <span class="tag green">1.21.1</span>
+          <span class="tag">Client</span>
+          <span class="tag">Server</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">🔹</span>
+        <h3>Receitas Shapeless</h3>
+        <p>Receitas marcadas com 🔹 não exigem posicionamento específico na mesa de crafting — os ingredientes podem ficar em qualquer slot.</p>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">🔄</span>
+        <h3>Ingredientes Alternativos</h3>
+        <p>Células com <strong style="color:var(--green)">ALT</strong> aceitam mais de um tipo de item. O ícone anima entre as opções para facilitar a visualização.</p>
+      </div>
     </div>
+  </div>
 
-    <h3>Changelog</h3>
-    <ul id="changelog-list"></ul>
+  <!-- ══ DOWNLOAD ══ -->
+  <div class="tab-panel" id="tab-download" role="tabpanel">
+    <div class="section-label">Versões Disponíveis</div>
+    <h2>Download</h2>
 
-    <h3>Receitas desta versão</h3>
+    <div class="version-selector">
+      <div class="version-header">
+        <label for="versoes">Versão</label>
+        <select id="versoes" aria-label="Selecionar versão"></select>
+        <a id="downloadBtn" href="#" class="btn-download">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 1v8M3 6l4 4 4-4M1 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Baixar .jar
+        </a>
+      </div>
+      <div class="changelog-wrap">
+        <h3>Changelog</h3>
+        <ul id="changelog-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RECEITAS ══ -->
+  <div class="tab-panel" id="tab-recipes" role="tabpanel">
+    <div class="section-label">Crafting</div>
+    <h2>Receitas</h2>
+    <div class="version-pill-bar">
+      <span>Versão:</span>
+      <span id="recipe-version-tag" class="tag gold"></span>
+    </div>
     <div id="recipes-cards" class="recipe-grid"></div>
-  </section>
+  </div>
 
 </main>
 
 <footer>
-  &copy; 2026 Better Craftings Mod — Feito com ❤ para a comunidade
+  &copy; 2026 <strong>Better Craftings Mod</strong> — Feito com ❤ para a comunidade Minecraft
 </footer>
 
 <script>
-/* =============================================================
-   CONFIGURAÇÃO DAS VERSÕES
-   ---------------------------------------------------------------
-   Para cada célula no grid, use:
-
-     null
-       → célula vazia
-
-     "Coal.png"
-       → item fixo
-
-     { primary: "Coal.png", alt: "Charcoal.png" }
-       → a célula vai animar entre os dois itens (crossfade)
-         e mostrar o indicador "ALT" no canto
-
-   ============================================================= */
+/* ═══════════════════════════════════════════════
+   DADOS DAS VERSÕES
+   -----------------------------------------------
+   Células do grid:
+     null                              → vazia
+     "Coal.png"                        → item fixo
+     { primary: "Coal.png",
+       alt: "Charcoal.png" }           → crossfade ALT
+═══════════════════════════════════════════════ */
 const VERSOES = [
   {
-    nome: "1.0.0 — NeoForge 1.21.1 (mais recente)",
+    nome: "1.0.0 — NeoForge 1.21.1",
+    tag: "v1.0.0",
     arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
     changelog: [
       "🔹 Adicionado BetterGunpowderRecipe",
@@ -406,7 +781,7 @@ const VERSOES = [
     ],
     receitas: [
       {
-        nome: "Better Gunpowder Recipe 🔹",
+        nome: "Better Gunpowder",
         shapeless: true,
         grid: [
           [{ primary: "Coal.png", alt: "Charcoal.png" }, "redstone_dust.png", null],
@@ -415,10 +790,10 @@ const VERSOES = [
         ],
         resultado: "Gunpowder.png",
         quantidade: 2,
-        descricao: "Usa Coal ou Charcoal + Redstone Dust. Receita shapeless — itens em qualquer posição."
+        descricao: "Usa Coal ou Charcoal + Redstone Dust. Ingredientes em qualquer posição."
       },
       {
-        nome: "Better Redstone Recipe 🔹",
+        nome: "Better Redstone",
         shapeless: true,
         grid: [
           [{ primary: "Coal.png", alt: "Charcoal.png" }, "Iron_ingot.png", null],
@@ -427,82 +802,80 @@ const VERSOES = [
         ],
         resultado: "redstone_dust.png",
         quantidade: 2,
-        descricao: "Usa Coal ou Charcoal + Iron Ingot. Receita shapeless."
+        descricao: "Usa Coal ou Charcoal + Iron Ingot. Ingredientes em qualquer posição."
       },
       {
-        nome: "Better Coal Recipe 🔹",
+        nome: "Better Coal",
         shapeless: true,
         grid: [
           ["Charcoal.png", null, null],
-          [null,           null, null],
-          [null,           null, null]
+          [null, null, null],
+          [null, null, null]
         ],
         resultado: "Coal.png",
         quantidade: 1,
-        descricao: "Converte Charcoal em Coal. Receita shapeless."
+        descricao: "Converte Charcoal em Coal. Ingrediente em qualquer posição."
       }
     ]
   }
 ];
 
-/* =============================================================
-   LÓGICA — não precisa editar abaixo para adicionar receitas
-   ============================================================= */
-const selectEl      = document.getElementById("versoes");
-const downloadBtn   = document.getElementById("downloadBtn");
-const changelogList = document.getElementById("changelog-list");
-const recipesCards  = document.getElementById("recipes-cards");
+/* ═══════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════ */
+const tabBtns   = document.querySelectorAll('.tab-btn');
+const tabPanels = document.querySelectorAll('.tab-panel');
 
-// Offset acumulado para escalonar o início da animação entre células,
-// evitando que todas pulsem ao mesmo tempo.
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === 'tab-' + target));
+  });
+});
+
+/* ═══════════════════════════════════════════════
+   CELL BUILDER
+═══════════════════════════════════════════════ */
 let animOffset = 0;
 
 function buildCell(item) {
-  const cell = document.createElement("div");
+  const cell = document.createElement('div');
 
   if (!item) {
-    cell.className = "crafting-cell empty";
+    cell.className = 'crafting-cell empty';
     return cell;
   }
 
-  if (typeof item === "object" && item.alt) {
-    // Célula animada: crossfade entre primary e alt
-    cell.className = "crafting-cell has-alt";
+  if (typeof item === 'object' && item.alt) {
+    cell.className = 'crafting-cell has-alt';
 
-    const wrap = document.createElement("div");
-    wrap.className = "cell-anim-wrap";
+    const wrap = document.createElement('div');
+    wrap.className = 'cell-anim-wrap';
 
-    // Cada célula animada começa em um momento diferente do ciclo
-    const delay = -(animOffset % 3);
-    animOffset += 0.7;
-    wrap.style.setProperty("--cell-delay", delay + "s");
+    const delay = -(animOffset % 3.5);
+    animOffset += 0.8;
 
-    const imgPrimary = document.createElement("img");
-    imgPrimary.src       = "images/" + item.primary;
-    imgPrimary.alt       = item.primary.replace(".png", "");
-    imgPrimary.title     = imgPrimary.alt + " (ou " + item.alt.replace(".png", "") + ")";
-    imgPrimary.className = "img-primary";
-    imgPrimary.style.animationDelay = delay + "s";
+    const mkImg = (src, cls) => {
+      const img = document.createElement('img');
+      img.src = 'images/' + src;
+      img.alt = src.replace('.png', '');
+      img.title = img.alt;
+      img.className = cls;
+      img.style.animationDelay = delay + 's';
+      return img;
+    };
 
-    const imgAlt = document.createElement("img");
-    imgAlt.src       = "images/" + item.alt;
-    imgAlt.alt       = item.alt.replace(".png", "");
-    imgAlt.title     = imgAlt.alt + " (ou " + item.primary.replace(".png", "") + ")";
-    imgAlt.className = "img-alt";
-    imgAlt.style.animationDelay = delay + "s";
-
-    wrap.appendChild(imgPrimary);
-    wrap.appendChild(imgAlt);
+    wrap.appendChild(mkImg(item.primary, 'img-primary'));
+    wrap.appendChild(mkImg(item.alt,     'img-alt'));
     cell.appendChild(wrap);
 
   } else {
-    // Célula com item fixo
-    const filename = typeof item === "string" ? item : item.primary;
-    cell.className = "crafting-cell";
-
-    const img = document.createElement("img");
-    img.src   = "images/" + filename;
-    img.alt   = filename.replace(".png", "");
+    cell.className = 'crafting-cell';
+    const filename = typeof item === 'string' ? item : item.primary;
+    const img = document.createElement('img');
+    img.src   = 'images/' + filename;
+    img.alt   = filename.replace('.png', '');
     img.title = img.alt;
     cell.appendChild(img);
   }
@@ -510,98 +883,127 @@ function buildCell(item) {
   return cell;
 }
 
-function buildRecipeCard(receita) {
-  const card = document.createElement("div");
-  card.className = "recipe-card";
+/* ═══════════════════════════════════════════════
+   RECIPE CARD BUILDER
+═══════════════════════════════════════════════ */
+function buildRecipeCard(r) {
+  const card = document.createElement('div');
+  card.className = 'recipe-card';
 
-  // Título
-  const h4 = document.createElement("h4");
-  h4.textContent = receita.nome;
-  card.appendChild(h4);
+  // Título + badge shapeless
+  const titleRow = document.createElement('div');
+  titleRow.className = 'recipe-card-title';
+  const h4 = document.createElement('h4');
+  h4.textContent = r.nome + (r.shapeless ? ' 🔹' : '');
+  titleRow.appendChild(h4);
+  if (r.shapeless) {
+    const badge = document.createElement('span');
+    badge.className = 'badge-shapeless';
+    badge.textContent = 'Shapeless';
+    titleRow.appendChild(badge);
+  }
+  card.appendChild(titleRow);
 
-  // Grid + seta + resultado
-  const wrapper = document.createElement("div");
-  wrapper.className = "crafting-wrapper";
+  // Wrapper: grid + arrow + result
+  const wrapper = document.createElement('div');
+  wrapper.className = 'crafting-wrapper';
 
-  // Grade 3×3
-  const grid = document.createElement("div");
-  grid.className = "crafting-grid";
-
+  // Grid 3×3
+  const grid = document.createElement('div');
+  grid.className = 'crafting-grid';
   let hasAlt = false;
   for (let row = 0; row < 3; row++) {
     for (let col = 0; col < 3; col++) {
-      const item = receita.grid[row][col];
-      if (item && typeof item === "object" && item.alt) hasAlt = true;
+      const item = r.grid[row][col];
+      if (item && typeof item === 'object' && item.alt) hasAlt = true;
       grid.appendChild(buildCell(item));
     }
   }
   wrapper.appendChild(grid);
 
-  // Seta
-  const arrow = document.createElement("span");
-  arrow.className   = "arrow";
-  arrow.textContent = "→";
-  wrapper.appendChild(arrow);
+  // Arrow SVG
+  const arrowWrap = document.createElement('div');
+  arrowWrap.className = 'craft-arrow';
+  arrowWrap.innerHTML = `
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <path d="M6 14h16M16 8l6 6-6 6" stroke="#e8b84b" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="yield-label">×${r.quantidade}</span>
+  `;
+  wrapper.appendChild(arrowWrap);
 
-  // Resultado
-  const resultCell = document.createElement("div");
-  resultCell.className = "result-cell";
-  const resImg = document.createElement("img");
-  resImg.src = "images/" + receita.resultado;
-  resImg.alt = receita.resultado.replace(".png", "");
-  const resQty = document.createElement("span");
-  resQty.className   = "result-qty";
-  resQty.textContent = receita.quantidade + "×";
+  // Result
+  const resultCell = document.createElement('div');
+  resultCell.className = 'result-cell';
+  const resImg = document.createElement('img');
+  resImg.src = 'images/' + r.resultado;
+  resImg.alt = r.resultado.replace('.png', '');
+  const resQty = document.createElement('span');
+  resQty.className = 'result-qty';
+  resQty.textContent = r.quantidade + '×';
   resultCell.appendChild(resImg);
   resultCell.appendChild(resQty);
   wrapper.appendChild(resultCell);
 
   card.appendChild(wrapper);
 
-  // Legenda (só quando há célula animada)
+  // ALT legend
   if (hasAlt) {
-    const legend = document.createElement("div");
-    legend.className = "alt-legend";
-    legend.innerHTML = '<span class="alt-legend-dot"></span> Células marcadas <strong>ALT</strong> aceitam ingredientes alternativos';
+    const legend = document.createElement('div');
+    legend.className = 'alt-legend';
+    legend.innerHTML = '<span class="alt-dot"></span> Células <strong>ALT</strong> aceitam ingredientes alternativos';
     card.appendChild(legend);
   }
 
-  // Descrição
-  if (receita.descricao) {
-    const desc = document.createElement("p");
-    desc.className   = "recipe-desc";
-    desc.textContent = receita.descricao;
+  // Description
+  if (r.descricao) {
+    const desc = document.createElement('p');
+    desc.className = 'recipe-desc';
+    desc.textContent = r.descricao;
     card.appendChild(desc);
   }
 
   return card;
 }
 
-function updateVersion(index) {
-  const versao = VERSOES[index];
-  downloadBtn.href = versao.arquivo;
+/* ═══════════════════════════════════════════════
+   VERSÃO ATIVA
+═══════════════════════════════════════════════ */
+const selectEl       = document.getElementById('versoes');
+const downloadBtn    = document.getElementById('downloadBtn');
+const changelogList  = document.getElementById('changelog-list');
+const recipesCards   = document.getElementById('recipes-cards');
+const recipeVerTag   = document.getElementById('recipe-version-tag');
 
-  changelogList.innerHTML = "";
-  versao.changelog.forEach(item => {
-    const li = document.createElement("li");
+function updateVersion(index) {
+  const v = VERSOES[index];
+  downloadBtn.href = v.arquivo;
+
+  // Changelog
+  changelogList.innerHTML = '';
+  v.changelog.forEach(item => {
+    const li = document.createElement('li');
     li.textContent = item;
     changelogList.appendChild(li);
   });
 
+  // Recipes
   animOffset = 0;
-  recipesCards.innerHTML = "";
-  versao.receitas.forEach(r => recipesCards.appendChild(buildRecipeCard(r)));
+  recipesCards.innerHTML = '';
+  recipeVerTag.textContent = v.tag || v.nome;
+  v.receitas.forEach(r => recipesCards.appendChild(buildRecipeCard(r)));
 }
 
 // Preenche dropdown
 VERSOES.forEach((v, i) => {
-  const opt = document.createElement("option");
+  const opt = document.createElement('option');
   opt.value = i;
   opt.textContent = v.nome;
   selectEl.appendChild(opt);
 });
 
-selectEl.addEventListener("change", () => updateVersion(Number(selectEl.value)));
+selectEl.addEventListener('change', () => updateVersion(Number(selectEl.value)));
 updateVersion(0);
 </script>
 </body>
