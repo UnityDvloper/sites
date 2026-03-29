@@ -405,28 +405,20 @@ h2 {
   font-size: 1rem; color: var(--gold); letter-spacing: .04em; line-height: 1.2;
 }
 
-/* ★ Badge shapeless MAIOR e mais vistoso */
+/* ★ Badge shapeless */
 .badge-shapeless {
-  display: inline-flex; align-items: center; gap: .5rem;
+  display: inline-flex; align-items: center; gap: .55rem;
   font-family: 'Outfit', sans-serif;
-  font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  background: rgba(78,203,94,.14);
-  border: 1.5px solid rgba(78,203,94,.45);
+  font-size: 1rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+  background: rgba(78,203,94,.16);
+  border: 2px solid rgba(78,203,94,.55);
   color: var(--green);
-  padding: .35rem .85rem .35rem .7rem;
-  border-radius: 6px; white-space: nowrap; flex-shrink: 0;
-  box-shadow: 0 0 12px rgba(78,203,94,.12), inset 0 1px 0 rgba(78,203,94,.1);
+  padding: .45rem 1.1rem .45rem .85rem;
+  border-radius: 8px; white-space: nowrap; flex-shrink: 0;
+  box-shadow: 0 0 18px rgba(78,203,94,.18), inset 0 1px 0 rgba(78,203,94,.15);
 }
-.shapeless-icon {
-  width: 18px; height: 18px;
-  image-rendering: pixelated; flex-shrink: 0;
-  filter: brightness(0) saturate(100%) invert(65%) sepia(50%) saturate(500%) hue-rotate(80deg) brightness(1.1);
-}
-.badge-shapeless-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--green); flex-shrink: 0;
-  box-shadow: 0 0 8px rgba(78,203,94,.9);
-  animation: pulseDot 2s ease-in-out infinite;
+.badge-shapeless-icon {
+  width: 22px; height: 22px; flex-shrink: 0;
 }
 @keyframes pulseDot {
   0%,100% { opacity:1; transform:scale(1); }
@@ -884,7 +876,7 @@ function buildRecipeCard(r) {
   if (r.shapeless) {
     const badge = document.createElement('span');
     badge.className = 'badge-shapeless';
-    badge.innerHTML = '<span class="badge-shapeless-dot"></span> Shapeless';
+    badge.innerHTML = `<svg class="badge-shapeless-icon" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity=".9"/><rect x="8" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/><rect x="15" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity=".7"/><rect x="1" y="8" width="6" height="6" rx="1.5" fill="currentColor" opacity=".5"/><rect x="8" y="8" width="6" height="6" rx="1.5" fill="currentColor" opacity=".85"/><rect x="15" y="8" width="6" height="6" rx="1.5" fill="currentColor" opacity=".3"/><rect x="1" y="15" width="6" height="6" rx="1.5" fill="currentColor" opacity=".6"/><rect x="8" y="15" width="6" height="6" rx="1.5" fill="currentColor" opacity=".35"/><rect x="15" y="15" width="6" height="6" rx="1.5" fill="currentColor" opacity=".75"/></svg> Shapeless`;
     head.appendChild(badge);
   }
   card.appendChild(head);
