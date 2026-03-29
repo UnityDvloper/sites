@@ -4,199 +4,605 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Better Craftings Mod</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 <style>
-body { font-family:'Segoe UI', sans-serif; margin:0; padding:0; background:#121212; color:#fff; }
-header { background:#1f1f1f; padding:2rem; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.3);}
-header h1 { margin:0; font-size:2.5rem; color:#ffb74d; }
-main { max-width:1000px; margin:2rem auto; padding:0 1rem;}
-section { margin-bottom:3rem; }
-h2 { color:#ffb74d; margin-bottom:1rem; }
-p { line-height:1.6; }
-select { padding:0.5rem; font-size:1rem; margin-right:1rem; }
-.btn { text-decoration:none; padding:0.6rem 1.2rem; background:#ffb74d; color:black; border-radius:5px; font-weight:bold; font-size:1rem; }
-.btn:hover { background:#ffa726; }
-.yellow-text { color:#ffeb3b; font-weight:bold; }
+/* ===========================
+   CSS VARIABLES — edite aqui para mudar o tema
+   =========================== */
+:root {
+  --bg:          #0e0e0e;
+  --surface:     #181818;
+  --surface2:    #222;
+  --border:      #333;
+  --cell-bg:     #2c2c2c;
+  --cell-border: #555;
+  --accent:      #ffb74d;
+  --accent-hover:#ffa726;
+  --text:        #e0e0e0;
+  --text-dim:    #888;
+  --radius:      8px;
+  --cell-size:   56px;
+  --cell-gap:    4px;
+}
 
-.recipe-card { background:#1f1f1f; padding:1rem; border-radius:8px; margin-bottom:1rem; box-shadow:0 2px 5px rgba(0,0,0,0.5);}
-.recipe-card h4 { margin:0 0 0.5rem 0; color:#ffb74d; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Crafting grid estilo Minecraft */
-.crafting-grid { display:grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(3, 60px); gap:3px; margin-bottom:0.5rem; background:#2a2a2a; padding:5px; border-radius:5px;}
-.crafting-cell { width:60px; height:60px; background:#3a3a3a; border:1px solid #555; border-radius:3px; display:flex; align-items:center; justify-content:center;}
-.crafting-cell img { max-width:48px; max-height:48px; }
-.resultado { display:flex; align-items:center; margin-top:0.5rem; gap:10px; }
-.resultado img { max-width:48px; max-height:48px; }
+body {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
 
-footer { text-align:center; padding:1.5rem 0; background:#1f1f1f; margin-top:2rem; }
+/* ===========================
+   HEADER
+   =========================== */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 2.5rem 1rem;
+  text-align: center;
+}
+header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 2.4rem;
+  color: var(--accent);
+  letter-spacing: .05em;
+}
+header p {
+  margin-top: .5rem;
+  color: var(--text-dim);
+  font-size: 1rem;
+}
+
+/* ===========================
+   LAYOUT
+   =========================== */
+main {
+  max-width: 960px;
+  margin: 2.5rem auto;
+  padding: 0 1.2rem;
+}
+section { margin-bottom: 3rem; }
+
+h2 {
+  font-family: 'Cinzel', serif;
+  color: var(--accent);
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--border);
+}
+h3 {
+  color: var(--accent);
+  font-size: 1.1rem;
+  margin: 1.5rem 0 .75rem;
+}
+p { line-height: 1.6; color: var(--text-dim); }
+
+/* ===========================
+   DOWNLOAD BAR
+   =========================== */
+.download-bar {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+select {
+  padding: .5rem .75rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  flex: 1;
+  min-width: 200px;
+}
+select:focus { outline: 2px solid var(--accent); }
+
+.btn {
+  display: inline-block;
+  padding: .55rem 1.3rem;
+  background: var(--accent);
+  color: #000;
+  border-radius: var(--radius);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.btn:hover { background: var(--accent-hover); }
+
+/* ===========================
+   CHANGELOG
+   =========================== */
+#changelog-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+#changelog-list li {
+  background: var(--surface2);
+  border-left: 3px solid var(--accent);
+  padding: .45rem .9rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: .95rem;
+}
+
+/* ===========================
+   RECIPE CARDS
+   =========================== */
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1.2rem;
+}
+
+.recipe-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.recipe-card h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+/* ===========================
+   CRAFTING GRID 3×3
+   =========================== */
+.crafting-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.crafting-grid {
+  display: grid;
+  grid-template-columns: repeat(3, var(--cell-size));
+  grid-template-rows:    repeat(3, var(--cell-size));
+  gap: var(--cell-gap);
+  background: var(--surface2);
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.crafting-cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  background: var(--cell-bg);
+  border: 1px solid var(--cell-border);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.crafting-cell.empty {
+  background: linear-gradient(135deg, #2a2a2a 0%, #252525 100%);
+}
+
+.crafting-cell img {
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+}
+
+/* ===========================
+   CÉLULA COM ALTERNATIVA ANIMADA
+   Duas imagens empilhadas fazem crossfade entre si.
+   =========================== */
+.crafting-cell.has-alt {
+  border-color: #81c78455;
+}
+
+/* Container que empilha as duas imagens */
+.cell-anim-wrap {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.cell-anim-wrap img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+}
+
+/*
+  Ciclo (3s total):
+  0–40%  → primary visível, alt invisível
+  45–90% → primary invisível, alt visível
+  95–100%→ volta ao início (crossfade)
+*/
+.cell-anim-wrap .img-primary {
+  animation: fadePrimary 3s ease-in-out infinite;
+  animation-delay: var(--cell-delay, 0s);
+}
+.cell-anim-wrap .img-alt {
+  animation: fadeAlt 3s ease-in-out infinite;
+  animation-delay: var(--cell-delay, 0s);
+}
+
+@keyframes fadePrimary {
+  0%, 35%  { opacity: 1; }
+  45%, 90% { opacity: 0; }
+  100%     { opacity: 1; }
+}
+@keyframes fadeAlt {
+  0%, 35%  { opacity: 0; }
+  45%, 90% { opacity: 1; }
+  100%     { opacity: 0; }
+}
+
+/* Indicador "ALT" no canto da célula */
+.crafting-cell.has-alt::after {
+  content: "ALT";
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 7px;
+  font-weight: 700;
+  color: #81c784;
+  line-height: 1;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ===========================
+   SETA E RESULTADO
+   =========================== */
+.arrow {
+  font-size: 1.8rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.result-cell {
+  width: calc(var(--cell-size) + 8px);
+  height: calc(var(--cell-size) + 8px);
+  background: var(--cell-bg);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.result-cell img {
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+}
+.result-qty {
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--accent);
+}
+
+/* ===========================
+   LEGENDA ALT
+   =========================== */
+.alt-legend {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .8rem;
+  color: #81c784;
+}
+.alt-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #81c784;
+  flex-shrink: 0;
+}
+
+.recipe-desc {
+  font-size: .88rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ===========================
+   FOOTER
+   =========================== */
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: .9rem;
+}
 </style>
 </head>
 <body>
 
 <header>
-<h1>Better Craftings Mod</h1>
+  <h1>⚒ Better Craftings Mod</h1>
+  <p>Novas receitas e melhorias no sistema de crafting do Minecraft</p>
 </header>
 
 <main>
-<section class="sobre">
-<h2>Sobre o Mod</h2>
-<p>O <strong>Better Craftings</strong> é um mod para Minecraft que melhora o sistema de crafting, adicionando novas receitas e funcionalidades. Compatível com Neoforge e versões recentes do Minecraft!</p>
-</section>
 
-<section class="downloads">
-<h2 class="yellow-text">Baixe o Better Crafting</h2>
-<select id="versoes"></select>
-<a id="downloadBtn" href="#" download class="btn">Baixar</a>
+  <section>
+    <h2>Sobre o Mod</h2>
+    <p>
+      O <strong style="color:var(--accent)">Better Craftings</strong> é um mod para Minecraft que expande o sistema de
+      crafting com novas receitas úteis. Compatível com <strong>NeoForge</strong> e versões recentes do Minecraft.
+      Receitas marcadas com 🔹 não possuem formato específico (shapeless).
+    </p>
+  </section>
 
-<div id="changelog" style="margin-top:1rem;">
-<h3>Changelog</h3>
-<ul id="changelog-list"></ul>
-</div>
+  <section>
+    <h2>Download</h2>
+    <div class="download-bar">
+      <select id="versoes" aria-label="Selecionar versão"></select>
+      <a id="downloadBtn" href="#" class="btn">⬇ Baixar</a>
+    </div>
 
-<div id="recipes" style="margin-top:1rem;">
-<h3>Receitas desta versão</h3>
-<div id="recipes-cards"></div>
-</div>
-</section>
+    <h3>Changelog</h3>
+    <ul id="changelog-list"></ul>
+
+    <h3>Receitas desta versão</h3>
+    <div id="recipes-cards" class="recipe-grid"></div>
+  </section>
+
 </main>
 
 <footer>
-<p>&copy; 2026 Better Craftings Mod</p>
+  &copy; 2026 Better Craftings Mod — Feito com ❤ para a comunidade
 </footer>
 
 <script>
-// ======= CONFIGURAÇÃO DA VERSÃO =======
-const todasVersoes = [
+/* =============================================================
+   CONFIGURAÇÃO DAS VERSÕES
+   ---------------------------------------------------------------
+   Para cada célula no grid, use:
+
+     null
+       → célula vazia
+
+     "Coal.png"
+       → item fixo
+
+     { primary: "Coal.png", alt: "Charcoal.png" }
+       → a célula vai animar entre os dois itens (crossfade)
+         e mostrar o indicador "ALT" no canto
+
+   ============================================================= */
+const VERSOES = [
   {
-    nome:"better_craftings-1.0.0-neoforge-1.21.1 (mais recente)",
-    arquivo:"downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
-    changelog:[
-      "Adicionado BetterGunpowderRecipe 🔹",
-      "Adicionado BetterRedstoneRecipe 🔹",
-      "Adicionado BetterCoalRecipe 🔹"
+    nome: "1.0.0 — NeoForge 1.21.1 (mais recente)",
+    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
+    changelog: [
+      "🔹 Adicionado BetterGunpowderRecipe",
+      "🔹 Adicionado BetterRedstoneRecipe",
+      "🔹 Adicionado BetterCoalRecipe"
     ],
-    receitas:[
+    receitas: [
       {
-        nome:"Better Gunpowder Recipe 🔹",
-        grid:[
-          ["Coal.png","redstone_dust.png",""],
-          ["Charcoal.png","",""],
-          ["","",""]
+        nome: "Better Gunpowder Recipe 🔹",
+        shapeless: true,
+        grid: [
+          [{ primary: "Coal.png", alt: "Charcoal.png" }, "redstone_dust.png", null],
+          [null, null, null],
+          [null, null, null]
         ],
-        resultado:"Gunpowder.png",
-        quantidade:2,
-        descricao:"Pode usar carvão vegetal também. 🔹 indica sem formação de receita."
+        resultado: "Gunpowder.png",
+        quantidade: 2,
+        descricao: "Usa Coal ou Charcoal + Redstone Dust. Receita shapeless — itens em qualquer posição."
       },
       {
-        nome:"Better Redstone Recipe 🔹",
-        grid:[
-          ["Coal.png","Iron_ingot.png",""],
-          ["Charcoal.png","",""],
-          ["","",""]
+        nome: "Better Redstone Recipe 🔹",
+        shapeless: true,
+        grid: [
+          [{ primary: "Coal.png", alt: "Charcoal.png" }, "Iron_ingot.png", null],
+          [null, null, null],
+          [null, null, null]
         ],
-        resultado:"redstone_dust.png",
-        quantidade:2,
-        descricao:"Carvão vegetal também funciona. 🔹 indica sem formação de receita."
+        resultado: "redstone_dust.png",
+        quantidade: 2,
+        descricao: "Usa Coal ou Charcoal + Iron Ingot. Receita shapeless."
       },
       {
-        nome:"Better Coal Recipe 🔹",
-        grid:[
-          ["Charcoal.png","",""],
-          ["","",""],
-          ["","",""]
+        nome: "Better Coal Recipe 🔹",
+        shapeless: true,
+        grid: [
+          ["Charcoal.png", null, null],
+          [null,           null, null],
+          [null,           null, null]
         ],
-        resultado:"Coal.png",
-        quantidade:1,
-        descricao:"Sem formação da receita 🔹."
+        resultado: "Coal.png",
+        quantidade: 1,
+        descricao: "Converte Charcoal em Coal. Receita shapeless."
       }
     ]
   }
 ];
 
-// ======= DOM ELEMENTS =======
-const select = document.getElementById("versoes");
-const downloadBtn = document.getElementById("downloadBtn");
+/* =============================================================
+   LÓGICA — não precisa editar abaixo para adicionar receitas
+   ============================================================= */
+const selectEl      = document.getElementById("versoes");
+const downloadBtn   = document.getElementById("downloadBtn");
 const changelogList = document.getElementById("changelog-list");
-const recipesCards = document.getElementById("recipes-cards");
+const recipesCards  = document.getElementById("recipes-cards");
 
-// ======= FUNÇÕES =======
-function criarCardReceita(r){
+// Offset acumulado para escalonar o início da animação entre células,
+// evitando que todas pulsem ao mesmo tempo.
+let animOffset = 0;
+
+function buildCell(item) {
+  const cell = document.createElement("div");
+
+  if (!item) {
+    cell.className = "crafting-cell empty";
+    return cell;
+  }
+
+  if (typeof item === "object" && item.alt) {
+    // Célula animada: crossfade entre primary e alt
+    cell.className = "crafting-cell has-alt";
+
+    const wrap = document.createElement("div");
+    wrap.className = "cell-anim-wrap";
+
+    // Cada célula animada começa em um momento diferente do ciclo
+    const delay = -(animOffset % 3);
+    animOffset += 0.7;
+    wrap.style.setProperty("--cell-delay", delay + "s");
+
+    const imgPrimary = document.createElement("img");
+    imgPrimary.src       = "images/" + item.primary;
+    imgPrimary.alt       = item.primary.replace(".png", "");
+    imgPrimary.title     = imgPrimary.alt + " (ou " + item.alt.replace(".png", "") + ")";
+    imgPrimary.className = "img-primary";
+    imgPrimary.style.animationDelay = delay + "s";
+
+    const imgAlt = document.createElement("img");
+    imgAlt.src       = "images/" + item.alt;
+    imgAlt.alt       = item.alt.replace(".png", "");
+    imgAlt.title     = imgAlt.alt + " (ou " + item.primary.replace(".png", "") + ")";
+    imgAlt.className = "img-alt";
+    imgAlt.style.animationDelay = delay + "s";
+
+    wrap.appendChild(imgPrimary);
+    wrap.appendChild(imgAlt);
+    cell.appendChild(wrap);
+
+  } else {
+    // Célula com item fixo
+    const filename = typeof item === "string" ? item : item.primary;
+    cell.className = "crafting-cell";
+
+    const img = document.createElement("img");
+    img.src   = "images/" + filename;
+    img.alt   = filename.replace(".png", "");
+    img.title = img.alt;
+    cell.appendChild(img);
+  }
+
+  return cell;
+}
+
+function buildRecipeCard(receita) {
   const card = document.createElement("div");
-  card.className="recipe-card";
+  card.className = "recipe-card";
 
+  // Título
   const h4 = document.createElement("h4");
-  h4.textContent=r.nome;
+  h4.textContent = receita.nome;
   card.appendChild(h4);
 
-  // Crafting grid 3x3
-  r.grid.forEach(row=>{
-    const gridDiv = document.createElement("div");
-    gridDiv.className="crafting-grid";
-    row.forEach(celula=>{
-      const div=document.createElement("div");
-      div.className="crafting-cell";
-      if(celula){
-        const img=document.createElement("img");
-        img.src="images/"+celula;
-        div.appendChild(img);
-      }
-      gridDiv.appendChild(div);
-    });
-    card.appendChild(gridDiv);
-  });
+  // Grid + seta + resultado
+  const wrapper = document.createElement("div");
+  wrapper.className = "crafting-wrapper";
 
-  // Resultado com quantidade
-  const resDiv = document.createElement("div");
-  resDiv.className="resultado";
-  const imgRes = document.createElement("img");
-  imgRes.src="images/"+r.resultado;
-  const spanRes = document.createElement("span");
-  spanRes.textContent = r.quantidade + "x"; // mostra a quantidade
-  resDiv.appendChild(imgRes);
-  resDiv.appendChild(spanRes);
-  card.appendChild(resDiv);
+  // Grade 3×3
+  const grid = document.createElement("div");
+  grid.className = "crafting-grid";
+
+  let hasAlt = false;
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 3; col++) {
+      const item = receita.grid[row][col];
+      if (item && typeof item === "object" && item.alt) hasAlt = true;
+      grid.appendChild(buildCell(item));
+    }
+  }
+  wrapper.appendChild(grid);
+
+  // Seta
+  const arrow = document.createElement("span");
+  arrow.className   = "arrow";
+  arrow.textContent = "→";
+  wrapper.appendChild(arrow);
+
+  // Resultado
+  const resultCell = document.createElement("div");
+  resultCell.className = "result-cell";
+  const resImg = document.createElement("img");
+  resImg.src = "images/" + receita.resultado;
+  resImg.alt = receita.resultado.replace(".png", "");
+  const resQty = document.createElement("span");
+  resQty.className   = "result-qty";
+  resQty.textContent = receita.quantidade + "×";
+  resultCell.appendChild(resImg);
+  resultCell.appendChild(resQty);
+  wrapper.appendChild(resultCell);
+
+  card.appendChild(wrapper);
+
+  // Legenda (só quando há célula animada)
+  if (hasAlt) {
+    const legend = document.createElement("div");
+    legend.className = "alt-legend";
+    legend.innerHTML = '<span class="alt-legend-dot"></span> Células marcadas <strong>ALT</strong> aceitam ingredientes alternativos';
+    card.appendChild(legend);
+  }
 
   // Descrição
-  const desc = document.createElement("p");
-  desc.textContent = r.descricao;
-  card.appendChild(desc);
+  if (receita.descricao) {
+    const desc = document.createElement("p");
+    desc.className   = "recipe-desc";
+    desc.textContent = receita.descricao;
+    card.appendChild(desc);
+  }
 
   return card;
 }
 
-function updateVersion(i){
-  const v = todasVersoes[i];
-  downloadBtn.href=v.arquivo;
+function updateVersion(index) {
+  const versao = VERSOES[index];
+  downloadBtn.href = versao.arquivo;
 
-  // Changelog
-  changelogList.innerHTML="";
-  v.changelog.forEach(item=>{
-    const li=document.createElement("li");
-    li.textContent=item;
+  changelogList.innerHTML = "";
+  versao.changelog.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
     changelogList.appendChild(li);
   });
 
-  // Receitas
-  recipesCards.innerHTML="";
-  v.receitas.forEach(r=>{
-    const card = criarCardReceita(r);
-    recipesCards.appendChild(card);
-  });
+  animOffset = 0;
+  recipesCards.innerHTML = "";
+  versao.receitas.forEach(r => recipesCards.appendChild(buildRecipeCard(r)));
 }
 
 // Preenche dropdown
-todasVersoes.forEach((v,i)=>{
-  const opt=document.createElement("option");
-  opt.value=i;
-  opt.textContent=v.nome;
-  select.appendChild(opt);
+VERSOES.forEach((v, i) => {
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = v.nome;
+  selectEl.appendChild(opt);
 });
 
-// Evento ao mudar versão
-select.addEventListener("change",()=>updateVersion(select.value));
-
-// Inicializa
+selectEl.addEventListener("change", () => updateVersion(Number(selectEl.value)));
 updateVersion(0);
 </script>
-
 </body>
 </html>
