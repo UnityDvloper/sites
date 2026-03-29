@@ -5,679 +5,297 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Better Craftings Mod</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Permanent+Marker&family=Rubik:wght@300;400;500;700&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&family=VT323&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════
-   RESET + CSS VARS
-═══════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:         #0b0d0f;
-  --surface:    #111418;
-  --surface2:   #181c22;
-  --surface3:   #1e2530;
-  --border:     #2a3040;
-  --border2:    #3a4560;
-
-  --gold:       #e8b84b;
-  --gold2:      #f5d080;
-  --gold-dim:   #9a7830;
-  --green:      #5ec46a;
-  --green-dim:  #2a5c30;
-  --red:        #e05050;
-  --blue:       #5090e0;
-
-  --text:       #c8d4e0;
-  --text-dim:   #6a7a8a;
-  --text-mid:   #8a9ab0;
-
-  --cell-size:  58px;
-  --cell-gap:   5px;
-  --radius:     6px;
-  --radius-lg:  12px;
+  --bg:        #0b0d0f;
+  --surface:   #111418;
+  --surface2:  #181c22;
+  --surface3:  #1e2530;
+  --border:    #2a3040;
+  --border2:   #3a4560;
+  --gold:      #e8b84b;
+  --gold2:     #f5d080;
+  --gold-dim:  #9a7830;
+  --green:     #5ec46a;
+  --green-dim: #2a5c30;
+  --text:      #c8d4e0;
+  --text-dim:  #6a7a8a;
+  --text-mid:  #8a9ab0;
+  --cell-size: 58px;
+  --cell-gap:  5px;
+  --radius:    6px;
+  --radius-lg: 12px;
 }
 
 html { scroll-behavior: smooth; }
-
 body {
   font-family: 'Rubik', sans-serif;
-  font-size: 1rem;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; overflow-x: hidden;
 }
-
-/* ═══════════════════════════════════════════════
-   PIXEL GRID BACKGROUND (CSS-only)
-═══════════════════════════════════════════════ */
 body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
+  content: ''; position: fixed; inset: 0;
   background-image:
-    linear-gradient(rgba(232,184,75,.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(232,184,75,.018) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
+    linear-gradient(rgba(232,184,75,.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,184,75,.016) 1px, transparent 1px);
+  background-size: 40px 40px; pointer-events: none; z-index: 0;
 }
 
-/* ═══════════════════════════════════════════════
-   HEADER
-═══════════════════════════════════════════════ */
+/* HEADER */
 header {
   position: relative;
   background: linear-gradient(180deg, #14181f 0%, var(--bg) 100%);
   border-bottom: 1px solid var(--border2);
   padding: 4rem 1.5rem 3.5rem;
-  text-align: center;
-  overflow: hidden;
-  z-index: 1;
+  text-align: center; overflow: hidden; z-index: 1;
 }
-
-/* Vignette glow behind title */
 header::after {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 200px;
-  background: radial-gradient(ellipse, rgba(232,184,75,.12) 0%, transparent 70%);
+  content: ''; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); width: 520px; height: 200px;
+  background: radial-gradient(ellipse, rgba(232,184,75,.11) 0%, transparent 70%);
   pointer-events: none;
 }
-
-.header-badge {
-  display: inline-block;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  color: var(--green);
-  font-size: .75rem;
-  font-weight: 500;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  padding: .28rem .8rem;
-  border-radius: 99px;
-  margin-bottom: 1.2rem;
-}
-
 header h1 {
   font-family: 'VT323', monospace;
   font-size: clamp(2.8rem, 7vw, 4.8rem);
-  color: var(--gold);
-  letter-spacing: .04em;
-  line-height: 1.1;
-  text-shadow:
-    0 0 20px rgba(232,184,75,.4),
-    0 0 60px rgba(232,184,75,.15);
-  position: relative;
-  z-index: 1;
+  color: var(--gold); letter-spacing: .04em; line-height: 1.1;
+  text-shadow: 0 0 22px rgba(232,184,75,.4), 0 0 60px rgba(232,184,75,.14);
+  position: relative; z-index: 1;
 }
+header h1 span { color: var(--gold2); }
+.header-sub { margin-top: .8rem; color: var(--text-mid); font-size: 1.05rem; font-weight: 300; }
 
-header h1 span {
-  color: var(--gold2);
-}
-
-.header-sub {
-  margin-top: .8rem;
-  color: var(--text-mid);
-  font-size: 1.05rem;
-  font-weight: 300;
-  letter-spacing: .02em;
-}
-
-/* ═══════════════════════════════════════════════
-   NAV TABS
-═══════════════════════════════════════════════ */
+/* TABS */
 .tabs-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(11,13,15,.92);
-  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(11,13,15,.92); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: center;
-  gap: 0;
+  display: flex; justify-content: center;
 }
-
 .tab-btn {
-  background: none;
-  border: none;
-  padding: .85rem 1.5rem;
-  color: var(--text-dim);
-  font-family: 'Rubik', sans-serif;
-  font-size: .9rem;
-  font-weight: 500;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  cursor: pointer;
+  background: none; border: none; padding: .85rem 1.5rem;
+  color: var(--text-dim); font-family: 'Rubik', sans-serif;
+  font-size: .9rem; font-weight: 500; letter-spacing: .05em;
+  text-transform: uppercase; cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: color .2s, border-color .2s;
-  position: relative;
 }
 .tab-btn:hover { color: var(--text); }
-.tab-btn.active {
-  color: var(--gold);
-  border-bottom-color: var(--gold);
-}
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
 
-/* ═══════════════════════════════════════════════
-   MAIN LAYOUT
-═══════════════════════════════════════════════ */
+/* LAYOUT */
 main {
-  max-width: 1020px;
-  margin: 0 auto;
+  max-width: 1020px; margin: 0 auto;
   padding: 2.5rem 1.4rem 4rem;
-  position: relative;
-  z-index: 1;
+  position: relative; z-index: 1;
 }
-
 .tab-panel { display: none; }
 .tab-panel.active { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ═══════════════════════════════════════════════
-   SECTION HEADINGS
-═══════════════════════════════════════════════ */
 .section-label {
-  display: flex;
-  align-items: center;
-  gap: .7rem;
-  color: var(--text-dim);
-  font-size: .72rem;
-  font-weight: 500;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: .7rem;
+  color: var(--text-dim); font-size: .72rem; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase; margin-bottom: 1.5rem;
 }
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+h2 { font-family:'VT323',monospace; color:var(--gold); font-size:1.9rem; letter-spacing:.03em; margin-bottom:1.2rem; }
 
-h2 {
-  font-family: 'VT323', monospace;
-  color: var(--gold);
-  font-size: 1.9rem;
-  letter-spacing: .03em;
-  margin-bottom: 1.2rem;
-}
-
-/* ═══════════════════════════════════════════════
-   ABOUT TAB
-═══════════════════════════════════════════════ */
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
+/* ABOUT */
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2rem; }
 .info-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.4rem 1.5rem;
-  transition: border-color .2s, box-shadow .2s;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:1.4rem 1.5rem;
+  transition:border-color .2s,box-shadow .2s;
 }
-.info-card:hover {
-  border-color: var(--border2);
-  box-shadow: 0 4px 24px rgba(0,0,0,.3);
-}
-
-.info-card-icon {
-  font-size: 1.6rem;
-  margin-bottom: .7rem;
-  display: block;
-}
-.info-card h3 {
-  color: var(--gold2);
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: .4rem;
-}
-.info-card p {
-  color: var(--text-mid);
-  font-size: .9rem;
-  line-height: 1.65;
-}
-
-.compat-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .4rem;
-  margin-top: .6rem;
-}
+.info-card:hover { border-color:var(--border2); box-shadow:0 4px 24px rgba(0,0,0,.3); }
+.info-card-icon { font-size:1.6rem; margin-bottom:.7rem; display:block; }
+.info-card h3 { color:var(--gold2); font-size:1rem; font-weight:500; margin-bottom:.4rem; }
+.info-card p { color:var(--text-mid); font-size:.9rem; line-height:1.65; }
+.compat-tags { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.6rem; }
 .tag {
-  display: inline-block;
-  background: var(--surface3);
-  border: 1px solid var(--border2);
-  color: var(--text-mid);
-  font-size: .75rem;
-  padding: .18rem .55rem;
-  border-radius: 4px;
-  font-weight: 500;
+  display:inline-block; background:var(--surface3);
+  border:1px solid var(--border2); color:var(--text-mid);
+  font-size:.75rem; padding:.18rem .55rem; border-radius:4px; font-weight:500;
 }
-.tag.green { border-color: var(--green-dim); color: var(--green); }
-.tag.gold  { border-color: var(--gold-dim);  color: var(--gold); }
+.tag.green { border-color:var(--green-dim); color:var(--green); }
+.tag.gold  { border-color:var(--gold-dim);  color:var(--gold);  }
 
-/* ═══════════════════════════════════════════════
-   DOWNLOAD TAB
-═══════════════════════════════════════════════ */
+/* DOWNLOAD */
 .version-selector {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-bottom: 2rem;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-lg); overflow:hidden; margin-bottom:2rem;
 }
-
 .version-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
+  display:flex; align-items:center; gap:1rem;
+  padding:1.2rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap;
 }
-
 .version-header label {
-  font-size: .8rem;
-  font-weight: 500;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  flex-shrink: 0;
+  font-size:.8rem; font-weight:500; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--text-dim); flex-shrink:0;
 }
-
 select#versoes {
-  flex: 1;
-  min-width: 200px;
-  padding: .5rem .8rem;
-  font-family: 'Rubik', sans-serif;
-  font-size: .95rem;
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a7a8a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right .75rem center;
-  padding-right: 2.2rem;
+  flex:1; min-width:200px; padding:.5rem .8rem;
+  font-family:'Rubik',sans-serif; font-size:.95rem;
+  background:var(--surface2); color:var(--text);
+  border:1px solid var(--border2); border-radius:var(--radius);
+  cursor:pointer; appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a7a8a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right .75rem center; padding-right:2.2rem;
 }
-select#versoes:focus { outline: 2px solid var(--gold); outline-offset: 2px; }
-
+select#versoes:focus { outline:2px solid var(--gold); outline-offset:2px; }
 .btn-download {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .55rem 1.4rem;
-  background: var(--gold);
-  color: #0b0d0f;
-  border-radius: var(--radius);
-  font-family: 'Rubik', sans-serif;
-  font-weight: 700;
-  font-size: .95rem;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background .15s, transform .1s, box-shadow .15s;
-  box-shadow: 0 2px 12px rgba(232,184,75,.25);
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.55rem 1.4rem; background:var(--gold); color:#0b0d0f;
+  border-radius:var(--radius); font-family:'Rubik',sans-serif;
+  font-weight:700; font-size:.95rem; text-decoration:none; white-space:nowrap;
+  transition:background .15s,transform .1s,box-shadow .15s;
+  box-shadow:0 2px 12px rgba(232,184,75,.25);
 }
-.btn-download:hover {
-  background: var(--gold2);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(232,184,75,.4);
-}
-.btn-download:active { transform: translateY(0); }
-
-/* Changelog */
-.changelog-wrap {
-  padding: 1.4rem 1.5rem;
-}
+.btn-download:hover { background:var(--gold2); transform:translateY(-1px); box-shadow:0 4px 20px rgba(232,184,75,.4); }
+.btn-download:active { transform:translateY(0); }
+.changelog-wrap { padding:1.4rem 1.5rem; }
 .changelog-wrap h3 {
-  font-size: .75rem;
-  font-weight: 500;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: .9rem;
+  font-size:.75rem; font-weight:500; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--text-dim); margin-bottom:.9rem;
 }
-
-#changelog-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: .4rem;
-}
+#changelog-list { list-style:none; display:flex; flex-direction:column; gap:.4rem; }
 #changelog-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: .7rem;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--gold-dim);
-  padding: .55rem .9rem;
-  border-radius: 0 var(--radius) var(--radius) 0;
-  font-size: .92rem;
-  color: var(--text-mid);
-  transition: border-left-color .15s, color .15s;
+  background:var(--surface2); border:1px solid var(--border);
+  border-left:3px solid var(--gold-dim); padding:.55rem .9rem;
+  border-radius:0 var(--radius) var(--radius) 0;
+  font-size:.92rem; color:var(--text-mid);
+  transition:border-left-color .15s,color .15s;
 }
-#changelog-list li:hover {
-  border-left-color: var(--gold);
-  color: var(--text);
-}
+#changelog-list li:hover { border-left-color:var(--gold); color:var(--text); }
 
-/* ═══════════════════════════════════════════════
-   RECIPES TAB
-═══════════════════════════════════════════════ */
-.version-pill-bar {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  margin-bottom: 1.8rem;
-  flex-wrap: wrap;
-}
-.version-pill-bar span {
-  font-size: .78rem;
-  color: var(--text-dim);
-  font-weight: 500;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-
-.recipe-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.2rem;
-}
-
+/* RECIPES */
+.version-pill-bar { display:flex; align-items:center; gap:.6rem; margin-bottom:1.8rem; flex-wrap:wrap; }
+.version-pill-bar span { font-size:.78rem; color:var(--text-dim); font-weight:500; letter-spacing:.1em; text-transform:uppercase; }
+.recipe-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.2rem; }
 .recipe-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.3rem;
-  display: flex;
-  flex-direction: column;
-  gap: .9rem;
-  transition: border-color .2s, box-shadow .2s, transform .2s;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:1.3rem;
+  display:flex; flex-direction:column; gap:.9rem;
+  transition:border-color .2s,box-shadow .2s,transform .2s;
 }
-.recipe-card:hover {
-  border-color: var(--border2);
-  box-shadow: 0 6px 30px rgba(0,0,0,.35);
-  transform: translateY(-2px);
-}
+.recipe-card:hover { border-color:var(--border2); box-shadow:0 6px 30px rgba(0,0,0,.35); transform:translateY(-2px); }
+.recipe-card-title { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+.recipe-card-title h4 { font-family:'VT323',monospace; font-size:1.25rem; color:var(--gold); letter-spacing:.03em; }
 
-.recipe-card-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .5rem;
-}
-.recipe-card-title h4 {
-  font-family: 'VT323', monospace;
-  font-size: 1.25rem;
-  color: var(--gold);
-  letter-spacing: .03em;
-}
-
+/* Badge shapeless */
 .badge-shapeless {
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  background: rgba(94,196,106,.12);
-  border: 1px solid var(--green-dim);
-  color: var(--green);
-  padding: .15rem .5rem;
-  border-radius: 4px;
-  white-space: nowrap;
-  flex-shrink: 0;
+  display:inline-flex; align-items:center; gap:.35rem;
+  font-size:.68rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+  background:rgba(94,196,106,.1); border:1px solid var(--green-dim);
+  color:var(--green); padding:.15rem .5rem .15rem .38rem;
+  border-radius:4px; white-space:nowrap; flex-shrink:0;
+}
+.shapeless-icon {
+  width:14px; height:14px;
+  image-rendering:pixelated; image-rendering:crisp-edges;
+  flex-shrink:0; vertical-align:middle;
+  /* verde monocromático — aplica filtro para combinar com a cor do badge */
+  filter: brightness(0) saturate(100%) invert(65%) sepia(40%) saturate(500%) hue-rotate(80deg) brightness(1.1);
 }
 
-/* ═══════════════════════════════════════════════
-   CRAFTING GRID
-═══════════════════════════════════════════════ */
-.crafting-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
+/* CRAFTING GRID */
+.crafting-wrapper { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
 .crafting-grid {
-  display: grid;
-  grid-template-columns: repeat(3, var(--cell-size));
-  grid-template-rows:    repeat(3, var(--cell-size));
-  gap: var(--cell-gap);
-  background: #0e1115;
-  padding: 7px;
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  box-shadow: inset 0 2px 8px rgba(0,0,0,.5);
-  flex-shrink: 0;
+  display:grid;
+  grid-template-columns:repeat(3,var(--cell-size));
+  grid-template-rows:repeat(3,var(--cell-size));
+  gap:var(--cell-gap);
+  background:#0e1115; padding:7px;
+  border:1px solid var(--border2); border-radius:var(--radius);
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.5); flex-shrink:0;
 }
-
 .crafting-cell {
-  width: var(--cell-size);
-  height: var(--cell-size);
-  background: #1a1f28;
-  border: 1px solid #2c3545;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
-  transition: border-color .15s;
+  width:var(--cell-size); height:var(--cell-size);
+  background:#1a1f28; border:1px solid #2c3545; border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  transition:border-color .15s;
 }
-.crafting-cell:hover { border-color: #4a5a70; }
-
-.crafting-cell.empty {
-  background: linear-gradient(135deg, #181c24 0%, #151921 100%);
-}
-
+.crafting-cell:hover { border-color:#4a5a70; }
+.crafting-cell.empty { background:linear-gradient(135deg,#181c24 0%,#151921 100%); }
 .crafting-cell img {
-  width: 40px;
-  height: 40px;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,.6));
+  width:40px; height:40px; image-rendering:pixelated; image-rendering:crisp-edges;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));
 }
-
-/* Animação ALT */
-.crafting-cell.has-alt {
-  border-color: rgba(94,196,106,.3);
-  box-shadow: inset 0 0 0 1px rgba(94,196,106,.08);
-}
-.crafting-cell.has-alt:hover {
-  border-color: rgba(94,196,106,.6);
-}
-
-.cell-anim-wrap {
-  position: relative;
-  width: 40px;
-  height: 40px;
-}
-.cell-anim-wrap img {
-  position: absolute;
-  top: 0; left: 0;
-  width: 40px;
-  height: 40px;
-  image-rendering: pixelated;
-}
-
-.cell-anim-wrap .img-primary { animation: fadePrimary 3.5s ease-in-out infinite; }
-.cell-anim-wrap .img-alt     { animation: fadeAlt     3.5s ease-in-out infinite; }
-
-@keyframes fadePrimary {
-  0%, 38%  { opacity: 1; }
-  48%, 92% { opacity: 0; }
-  100%     { opacity: 1; }
-}
-@keyframes fadeAlt {
-  0%, 38%  { opacity: 0; }
-  48%, 92% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-
+.crafting-cell.has-alt { border-color:rgba(94,196,106,.3); box-shadow:inset 0 0 0 1px rgba(94,196,106,.08); }
+.crafting-cell.has-alt:hover { border-color:rgba(94,196,106,.6); }
+.cell-anim-wrap { position:relative; width:40px; height:40px; }
+.cell-anim-wrap img { position:absolute; top:0; left:0; width:40px; height:40px; image-rendering:pixelated; }
+.cell-anim-wrap .img-primary { animation:fadePrimary 3.5s ease-in-out infinite; }
+.cell-anim-wrap .img-alt     { animation:fadeAlt     3.5s ease-in-out infinite; }
+@keyframes fadePrimary { 0%,38%{opacity:1} 48%,92%{opacity:0} 100%{opacity:1} }
+@keyframes fadeAlt     { 0%,38%{opacity:0} 48%,92%{opacity:1} 100%{opacity:0} }
 .crafting-cell.has-alt::after {
-  content: "ALT";
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  font-size: 7px;
-  font-weight: 700;
-  font-family: 'Rubik', sans-serif;
-  color: var(--green);
-  line-height: 1;
-  z-index: 2;
-  opacity: .8;
+  content:"ALT"; position:absolute; bottom:2px; right:2px;
+  font-size:7px; font-weight:700; font-family:'Rubik',sans-serif;
+  color:var(--green); line-height:1; z-index:2; opacity:.8;
 }
-
-/* Arrow */
-.craft-arrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .2rem;
-  flex-shrink: 0;
-}
-.craft-arrow svg {
-  opacity: .9;
-}
-.craft-arrow .yield-label {
-  font-size: .7rem;
-  color: var(--text-dim);
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-
-/* Result cell */
+.craft-arrow { display:flex; flex-direction:column; align-items:center; gap:.2rem; flex-shrink:0; }
+.craft-arrow .yield-label { font-size:.7rem; color:var(--text-dim); letter-spacing:.06em; text-transform:uppercase; }
 .result-cell {
-  width: calc(var(--cell-size) + 12px);
-  height: calc(var(--cell-size) + 12px);
-  background: #0e1115;
-  border: 1.5px solid var(--gold-dim);
-  border-radius: var(--radius);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  flex-shrink: 0;
-  box-shadow: 0 0 12px rgba(232,184,75,.12), inset 0 1px 0 rgba(255,255,255,.04);
-  position: relative;
-  overflow: hidden;
-  transition: border-color .2s, box-shadow .2s;
+  width:calc(var(--cell-size) + 12px); height:calc(var(--cell-size) + 12px);
+  background:#0e1115; border:1.5px solid var(--gold-dim); border-radius:var(--radius);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; flex-shrink:0;
+  box-shadow:0 0 12px rgba(232,184,75,.12),inset 0 1px 0 rgba(255,255,255,.04);
+  position:relative; overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
 }
-.result-cell:hover {
-  border-color: var(--gold);
-  box-shadow: 0 0 20px rgba(232,184,75,.25);
-}
+.result-cell:hover { border-color:var(--gold); box-shadow:0 0 20px rgba(232,184,75,.25); }
 .result-cell::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(232,184,75,.07) 0%, transparent 70%);
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(232,184,75,.07) 0%,transparent 70%);
 }
-.result-cell img {
-  width: 42px;
-  height: 42px;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,.7));
-  position: relative;
-}
-.result-qty {
-  font-weight: 700;
-  font-size: .8rem;
-  color: var(--gold);
-  letter-spacing: .05em;
-  position: relative;
-}
-
-/* ALT legend */
+.result-cell img { width:42px; height:42px; image-rendering:pixelated; filter:drop-shadow(0 2px 6px rgba(0,0,0,.7)); position:relative; }
+.result-qty { font-weight:700; font-size:.8rem; color:var(--gold); letter-spacing:.05em; position:relative; }
 .alt-legend {
-  display: flex;
-  align-items: center;
-  gap: .45rem;
-  font-size: .78rem;
-  color: var(--green);
-  background: rgba(94,196,106,.07);
-  border: 1px solid rgba(94,196,106,.18);
-  border-radius: 4px;
-  padding: .3rem .65rem;
+  display:flex; align-items:center; gap:.45rem; font-size:.78rem; color:var(--green);
+  background:rgba(94,196,106,.07); border:1px solid rgba(94,196,106,.18);
+  border-radius:4px; padding:.3rem .65rem;
 }
-.alt-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
-}
+.alt-dot { width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0; }
+.recipe-desc { font-size:.87rem; color:var(--text-dim); line-height:1.6; border-top:1px solid var(--border); padding-top:.75rem; }
 
-.recipe-desc {
-  font-size: .87rem;
-  color: var(--text-dim);
-  line-height: 1.6;
-  border-top: 1px solid var(--border);
-  padding-top: .75rem;
-}
-
-/* ═══════════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════════ */
+/* FOOTER */
 footer {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  padding: 2rem 1.5rem;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  color: var(--text-dim);
-  font-size: .88rem;
+  position:relative; z-index:1;
+  text-align:center; padding:2rem 1.5rem;
+  background:var(--surface); border-top:1px solid var(--border);
+  color:var(--text-dim); font-size:.88rem;
 }
-footer strong { color: var(--gold); font-weight: 500; }
+footer strong { color:var(--gold); font-weight:500; }
 
-/* ═══════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════ */
-@media (max-width: 600px) {
-  .about-grid { grid-template-columns: 1fr; }
-  .recipe-grid { grid-template-columns: 1fr; }
-  .tab-btn { padding: .75rem .9rem; font-size: .8rem; }
-  header h1 { font-size: 2.4rem; }
-  :root { --cell-size: 50px; }
+/* RESPONSIVE */
+@media(max-width:600px){
+  .about-grid { grid-template-columns:1fr; }
+  .recipe-grid { grid-template-columns:1fr; }
+  .tab-btn { padding:.75rem .9rem; font-size:.8rem; }
+  header h1 { font-size:2.4rem; }
+  :root { --cell-size:50px; }
 }
-
-/* ═══════════════════════════════════════════════
-   SCROLLBAR
-═══════════════════════════════════════════════ */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-dim)}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-badge">Mod Open Source</div>
   <h1>⚒ Better <span>Craftings</span></h1>
   <p class="header-sub">Novas receitas e melhorias no sistema de crafting do Minecraft</p>
 </header>
 
-<!-- NAV TABS -->
 <nav class="tabs-bar" role="tablist">
   <button class="tab-btn active" data-tab="about"   role="tab">Sobre</button>
   <button class="tab-btn"        data-tab="download" role="tab">Download</button>
@@ -686,7 +304,7 @@ footer strong { color: var(--gold); font-weight: 500; }
 
 <main>
 
-  <!-- ══ SOBRE ══ -->
+  <!-- SOBRE -->
   <div class="tab-panel active" id="tab-about" role="tabpanel">
     <div class="section-label">Visão Geral</div>
     <h2>Sobre o Mod</h2>
@@ -694,7 +312,7 @@ footer strong { color: var(--gold); font-weight: 500; }
       <div class="info-card">
         <span class="info-card-icon">🧱</span>
         <h3>O que é?</h3>
-        <p>Better Craftings expande o sistema de crafting vanilla com receitas úteis e intuitivas, reduzindo a dependência de processos demorados de farmar.</p>
+        <p>Better Craftings expande o sistema de crafting vanilla com receitas úteis, reduzindo a dependência de processos demorados de farmar.</p>
       </div>
       <div class="info-card">
         <span class="info-card-icon">⚙️</span>
@@ -707,9 +325,11 @@ footer strong { color: var(--gold); font-weight: 500; }
         </div>
       </div>
       <div class="info-card">
-        <span class="info-card-icon">🔹</span>
+        <span class="info-card-icon">
+          <img src="images/shapeless_symbol.png" alt="shapeless" style="width:32px;height:32px;image-rendering:pixelated;filter:brightness(0) saturate(100%) invert(65%) sepia(40%) saturate(500%) hue-rotate(80deg) brightness(1.1)">
+        </span>
         <h3>Receitas Shapeless</h3>
-        <p>Receitas marcadas com 🔹 não exigem posicionamento específico na mesa de crafting — os ingredientes podem ficar em qualquer slot.</p>
+        <p>Receitas sem formação — os ingredientes podem ficar em qualquer slot da mesa. O badge <span style="color:var(--green);font-weight:600">Shapeless</span> indica essas receitas.</p>
       </div>
       <div class="info-card">
         <span class="info-card-icon">🔄</span>
@@ -719,17 +339,16 @@ footer strong { color: var(--gold); font-weight: 500; }
     </div>
   </div>
 
-  <!-- ══ DOWNLOAD ══ -->
+  <!-- DOWNLOAD -->
   <div class="tab-panel" id="tab-download" role="tabpanel">
     <div class="section-label">Versões Disponíveis</div>
     <h2>Download</h2>
-
     <div class="version-selector">
       <div class="version-header">
         <label for="versoes">Versão</label>
         <select id="versoes" aria-label="Selecionar versão"></select>
         <a id="downloadBtn" href="#" class="btn-download">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M7 1v8M3 6l4 4 4-4M1 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           Baixar .jar
@@ -742,7 +361,7 @@ footer strong { color: var(--gold); font-weight: 500; }
     </div>
   </div>
 
-  <!-- ══ RECEITAS ══ -->
+  <!-- RECEITAS -->
   <div class="tab-panel" id="tab-recipes" role="tabpanel">
     <div class="section-label">Crafting</div>
     <h2>Receitas</h2>
@@ -760,284 +379,254 @@ footer strong { color: var(--gold); font-weight: 500; }
 </footer>
 
 <script>
-/* ═══════════════════════════════════════════════
-   DADOS DAS VERSÕES
-   -----------------------------------------------
-   Células do grid:
-     null                              → vazia
-     "Coal.png"                        → item fixo
-     { primary: "Coal.png",
-       alt: "Charcoal.png" }           → crossfade ALT
-═══════════════════════════════════════════════ */
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║  ✏️  EDITE AQUI PARA ADICIONAR VERSÕES E RECEITAS           ║
+   ╠══════════════════════════════════════════════════════════════╣
+   ║                                                              ║
+   ║  Cada objeto em VERSOES representa uma versão do mod.        ║
+   ║  A PRIMEIRA da lista aparece como padrão no dropdown.        ║
+   ║                                                              ║
+   ║  CAMPOS DA VERSÃO:                                           ║
+   ║    nome      → texto do dropdown                             ║
+   ║    tag       → rótulo curto (ex: "v1.0.0")                  ║
+   ║    arquivo   → caminho do .jar para download                 ║
+   ║    changelog → array de strings com as mudanças             ║
+   ║    receitas  → array de receitas (veja abaixo)               ║
+   ║                                                              ║
+   ║  CAMPOS DE UMA RECEITA:                                      ║
+   ║    nome       → título no card                               ║
+   ║    shapeless  → true = sem formação obrigatória              ║
+   ║    grid       → matriz 3×3 (veja legenda do grid)            ║
+   ║    resultado  → arquivo de imagem do item produzido          ║
+   ║    quantidade → quantidade produzida                         ║
+   ║    descricao  → texto explicativo (use "" para omitir)       ║
+   ║                                                              ║
+   ║  LEGENDA DO GRID:                                            ║
+   ║    null                             → célula vazia           ║
+   ║    "Coal.png"                       → item fixo              ║
+   ║    { primary:"Coal.png",            → anima entre dois itens ║
+   ║      alt:"Charcoal.png" }             (badge ALT)            ║
+   ║                                                              ║
+   ╚══════════════════════════════════════════════════════════════╝ */
+
 const VERSOES = [
+
+  /* ── v1.0.0 ─────────────────────────────────────────── */
   {
-    nome: "1.0.0 — NeoForge 1.21.1",
-    tag: "v1.0.0",
-    arquivo: "downloads/better_craftings-0.0.1-neoforge-1.21.1.jar",
+    nome:    "1.0.0 — NeoForge 1.21.1",
+    tag:     "v1.0.0",
+    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
     changelog: [
-      "🔹 Adicionado BetterGunpowderRecipe",
-      "🔹 Adicionado BetterRedstoneRecipe",
-      "🔹 Adicionado BetterCoalRecipe"
+      "Adicionado BetterGunpowderRecipe",
+      "Adicionado BetterRedstoneRecipe",
+      "Adicionado BetterCoalRecipe",
     ],
     receitas: [
       {
-        nome: "Better Gunpowder",
+        nome:      "Better Gunpowder",
         shapeless: true,
         grid: [
           [{ primary: "Coal.png", alt: "Charcoal.png" }, "redstone_dust.png", null],
           [null, null, null],
-          [null, null, null]
+          [null, null, null],
         ],
-        resultado: "Gunpowder.png",
+        resultado:  "Gunpowder.png",
         quantidade: 2,
-        descricao: "Usa Coal ou Charcoal + Redstone Dust. Ingredientes em qualquer posição."
+        descricao:  "Usa Coal ou Charcoal + Redstone Dust. Ingredientes em qualquer posição.",
       },
       {
-        nome: "Better Redstone",
+        nome:      "Better Redstone",
         shapeless: true,
         grid: [
           [{ primary: "Coal.png", alt: "Charcoal.png" }, "Iron_ingot.png", null],
           [null, null, null],
-          [null, null, null]
+          [null, null, null],
         ],
-        resultado: "redstone_dust.png",
+        resultado:  "redstone_dust.png",
         quantidade: 2,
-        descricao: "Usa Coal ou Charcoal + Iron Ingot. Ingredientes em qualquer posição."
+        descricao:  "Usa Coal ou Charcoal + Iron Ingot. Ingredientes em qualquer posição.",
       },
       {
-        nome: "Better Coal",
+        nome:      "Better Coal",
         shapeless: true,
         grid: [
           ["Charcoal.png", null, null],
           [null, null, null],
-          [null, null, null]
+          [null, null, null],
         ],
-        resultado: "Coal.png",
+        resultado:  "Coal.png",
         quantidade: 1,
-        descricao: "Converte Charcoal em Coal. Ingrediente em qualquer posição."
-      }
-    ]
-  },
-   {
-    nome: "0.0.1 — NeoForge 1.21.1",
-    tag: "v0.0.1",
-    arquivo: "downloads/better_craftings-1.0.0-neoforge-1.21.1.jar",
-    changelog: [
-      "🔹 Adicionado BetterGunpowderRecipe",
-      "🔹 Adicionado BetterRedstoneRecipe"
-    ],
-    receitas: [
-      {
-        nome: "Better Gunpowder",
-        shapeless: true,
-        grid: [
-          [{ primary: "Coal.png", alt: "Charcoal.png" }, "redstone_dust.png", null],
-          [null, null, null],
-          [null, null, null]
-        ],
-        resultado: "Gunpowder.png",
-        quantidade: 2,
-        descricao: "Usa Coal ou Charcoal + Redstone Dust. Ingredientes em qualquer posição."
+        descricao:  "Converte Charcoal em Coal. Ingrediente em qualquer posição.",
       },
-      {
-        nome: "Better Redstone",
-        shapeless: true,
-        grid: [
-          [{ primary: "Coal.png", alt: "Charcoal.png" }, "Iron_ingot.png", null],
-          [null, null, null],
-          [null, null, null]
-        ],
-        resultado: "redstone_dust.png",
-        quantidade: 2,
-        descricao: "Usa Coal ou Charcoal + Iron Ingot. Ingredientes em qualquer posição."
-      }
-    ]
-  }
+    ],
+  },
+
+  // ── MODELO PARA NOVA VERSÃO ────────────────────────────────
+  // Para adicionar uma versão nova, copie o bloco abaixo,
+  // remova os "//" do início de cada linha e preencha os campos:
+  //
+  // {
+  //   nome:    "2.0.0 — NeoForge 1.21.4",
+  //   tag:     "v2.0.0",
+  //   arquivo: "downloads/better_craftings-2.0.0-neoforge-1.21.4.jar",
+  //   changelog: [
+  //     "Adicionado BetterSticksRecipe",
+  //   ],
+  //   receitas: [
+  //     {
+  //       nome:      "Better Sticks",
+  //       shapeless: true,
+  //       grid: [
+  //         ["OakLog.png", null, null],
+  //         [null, null, null],
+  //         [null, null, null],
+  //       ],
+  //       resultado:  "Stick.png",
+  //       quantidade: 8,
+  //       descricao:  "Converte um Oak Log diretamente em gravetos.",
+  //     },
+  //   ],
+  // },
+
 ];
 
-/* ═══════════════════════════════════════════════
-   TABS
-═══════════════════════════════════════════════ */
-const tabBtns   = document.querySelectorAll('.tab-btn');
-const tabPanels = document.querySelectorAll('.tab-panel');
+/* ══════════════════════════════════════════════════
+   LÓGICA — não edite abaixo
+══════════════════════════════════════════════════ */
 
-tabBtns.forEach(btn => {
+// Ícone shapeless — usa a imagem images/shapeless_symbol.png
+const SHAPELESS_ICON = '<img src="images/shapeless_symbol.png" alt="shapeless" class="shapeless-icon" aria-hidden="true">';
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const target = btn.dataset.tab;
-    tabBtns.forEach(b => b.classList.toggle('active', b === btn));
-    tabPanels.forEach(p => p.classList.toggle('active', p.id === 'tab-' + target));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + btn.dataset.tab));
   });
 });
 
-/* ═══════════════════════════════════════════════
-   CELL BUILDER
-═══════════════════════════════════════════════ */
+// Builder: célula do grid
 let animOffset = 0;
-
 function buildCell(item) {
   const cell = document.createElement('div');
-
-  if (!item) {
-    cell.className = 'crafting-cell empty';
-    return cell;
-  }
-
+  if (!item) { cell.className = 'crafting-cell empty'; return cell; }
   if (typeof item === 'object' && item.alt) {
     cell.className = 'crafting-cell has-alt';
-
     const wrap = document.createElement('div');
     wrap.className = 'cell-anim-wrap';
-
     const delay = -(animOffset % 3.5);
     animOffset += 0.8;
-
-    const mkImg = (src, cls) => {
+    const mk = (src, cls) => {
       const img = document.createElement('img');
-      img.src = 'images/' + src;
-      img.alt = src.replace('.png', '');
-      img.title = img.alt;
-      img.className = cls;
-      img.style.animationDelay = delay + 's';
+      img.src = 'images/' + src; img.alt = src.replace('.png','');
+      img.className = cls; img.style.animationDelay = delay + 's';
       return img;
     };
-
-    wrap.appendChild(mkImg(item.primary, 'img-primary'));
-    wrap.appendChild(mkImg(item.alt,     'img-alt'));
+    wrap.appendChild(mk(item.primary, 'img-primary'));
+    wrap.appendChild(mk(item.alt,     'img-alt'));
     cell.appendChild(wrap);
-
   } else {
     cell.className = 'crafting-cell';
-    const filename = typeof item === 'string' ? item : item.primary;
     const img = document.createElement('img');
-    img.src   = 'images/' + filename;
-    img.alt   = filename.replace('.png', '');
-    img.title = img.alt;
+    const f = typeof item === 'string' ? item : item.primary;
+    img.src = 'images/' + f; img.alt = f.replace('.png','');
     cell.appendChild(img);
   }
-
   return cell;
 }
 
-/* ═══════════════════════════════════════════════
-   RECIPE CARD BUILDER
-═══════════════════════════════════════════════ */
+// Builder: card de receita
 function buildRecipeCard(r) {
   const card = document.createElement('div');
   card.className = 'recipe-card';
 
-  // Título + badge shapeless
   const titleRow = document.createElement('div');
   titleRow.className = 'recipe-card-title';
   const h4 = document.createElement('h4');
-  h4.textContent = r.nome + (r.shapeless ? ' 🔹' : '');
+  h4.textContent = r.nome;
   titleRow.appendChild(h4);
   if (r.shapeless) {
     const badge = document.createElement('span');
     badge.className = 'badge-shapeless';
-    badge.textContent = 'Shapeless';
+    badge.innerHTML = SHAPELESS_ICON + ' Shapeless';
     titleRow.appendChild(badge);
   }
   card.appendChild(titleRow);
 
-  // Wrapper: grid + arrow + result
   const wrapper = document.createElement('div');
   wrapper.className = 'crafting-wrapper';
 
-  // Grid 3×3
   const grid = document.createElement('div');
   grid.className = 'crafting-grid';
   let hasAlt = false;
-  for (let row = 0; row < 3; row++) {
+  for (let row = 0; row < 3; row++)
     for (let col = 0; col < 3; col++) {
       const item = r.grid[row][col];
       if (item && typeof item === 'object' && item.alt) hasAlt = true;
       grid.appendChild(buildCell(item));
     }
-  }
   wrapper.appendChild(grid);
 
-  // Arrow SVG
   const arrowWrap = document.createElement('div');
   arrowWrap.className = 'craft-arrow';
   arrowWrap.innerHTML = `
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <path d="M6 14h16M16 8l6 6-6 6" stroke="#e8b84b" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 14h16M16 8l6 6-6 6" stroke="#e8b84b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <span class="yield-label">×${r.quantidade}</span>
-  `;
+    <span class="yield-label">x${r.quantidade}</span>`;
   wrapper.appendChild(arrowWrap);
 
-  // Result
   const resultCell = document.createElement('div');
   resultCell.className = 'result-cell';
-  const resImg = document.createElement('img');
-  resImg.src = 'images/' + r.resultado;
-  resImg.alt = r.resultado.replace('.png', '');
-  const resQty = document.createElement('span');
-  resQty.className = 'result-qty';
-  resQty.textContent = r.quantidade + '×';
-  resultCell.appendChild(resImg);
-  resultCell.appendChild(resQty);
+  const ri = document.createElement('img');
+  ri.src = 'images/' + r.resultado; ri.alt = r.resultado.replace('.png','');
+  const rq = document.createElement('span');
+  rq.className = 'result-qty'; rq.textContent = r.quantidade + 'x';
+  resultCell.appendChild(ri); resultCell.appendChild(rq);
   wrapper.appendChild(resultCell);
-
   card.appendChild(wrapper);
 
-  // ALT legend
   if (hasAlt) {
-    const legend = document.createElement('div');
-    legend.className = 'alt-legend';
-    legend.innerHTML = '<span class="alt-dot"></span> Células <strong>ALT</strong> aceitam ingredientes alternativos';
-    card.appendChild(legend);
+    const leg = document.createElement('div');
+    leg.className = 'alt-legend';
+    leg.innerHTML = '<span class="alt-dot"></span> Células <strong>ALT</strong> aceitam ingredientes alternativos';
+    card.appendChild(leg);
   }
-
-  // Description
   if (r.descricao) {
     const desc = document.createElement('p');
-    desc.className = 'recipe-desc';
-    desc.textContent = r.descricao;
+    desc.className = 'recipe-desc'; desc.textContent = r.descricao;
     card.appendChild(desc);
   }
-
   return card;
 }
 
-/* ═══════════════════════════════════════════════
-   VERSÃO ATIVA
-═══════════════════════════════════════════════ */
-const selectEl       = document.getElementById('versoes');
-const downloadBtn    = document.getElementById('downloadBtn');
-const changelogList  = document.getElementById('changelog-list');
-const recipesCards   = document.getElementById('recipes-cards');
-const recipeVerTag   = document.getElementById('recipe-version-tag');
+// Atualiza versão selecionada
+const selectEl      = document.getElementById('versoes');
+const downloadBtn   = document.getElementById('downloadBtn');
+const changelogList = document.getElementById('changelog-list');
+const recipesCards  = document.getElementById('recipes-cards');
+const recipeVerTag  = document.getElementById('recipe-version-tag');
 
 function updateVersion(index) {
   const v = VERSOES[index];
   downloadBtn.href = v.arquivo;
-
-  // Changelog
   changelogList.innerHTML = '';
   v.changelog.forEach(item => {
     const li = document.createElement('li');
     li.textContent = item;
     changelogList.appendChild(li);
   });
-
-  // Recipes
   animOffset = 0;
   recipesCards.innerHTML = '';
   recipeVerTag.textContent = v.tag || v.nome;
   v.receitas.forEach(r => recipesCards.appendChild(buildRecipeCard(r)));
 }
 
-// Preenche dropdown
 VERSOES.forEach((v, i) => {
   const opt = document.createElement('option');
-  opt.value = i;
-  opt.textContent = v.nome;
+  opt.value = i; opt.textContent = v.nome;
   selectEl.appendChild(opt);
 });
-
 selectEl.addEventListener('change', () => updateVersion(Number(selectEl.value)));
 updateVersion(0);
 </script>
